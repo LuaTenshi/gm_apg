@@ -114,6 +114,9 @@ defaultSettings.cfg = {
 --[[------------------------------------------
         LOADING SAVED SETTINGS -- DO NOT EDIT THIS PART
 ]]--------------------------------------------
+
+-- TODO: Find out how to store this in the data/ folder instead
+
 if SERVER and file.Exists( "apg/settings.txt", "DATA" ) then
     table.Merge( APG, defaultSettings ) -- Load the default settings first!
 
