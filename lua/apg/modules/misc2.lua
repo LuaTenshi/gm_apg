@@ -136,7 +136,7 @@ local function collcall(ent, data)
             local mem = obj.CollisionTime
 
             while true do
-                mem = mem + 5
+                mem = mem + collisionCheckTimeFrame
                 subtract = subtract + 1
                 if mem >= obj.LastCollision then
                     break
@@ -146,7 +146,7 @@ local function collcall(ent, data)
             obj.Collisions = (obj.Collisions - subtract)
             obj.Collisions = (obj.Collisions > 1) and obj.Collisions or 1
 
-            obj.CollisionTime = (CurTime() + 5)
+            obj.CollisionTime = (CurTime() + collisionCheckTimeFrame)
         end
 
         ent['frzr9k'] = obj
