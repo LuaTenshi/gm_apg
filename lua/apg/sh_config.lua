@@ -93,7 +93,7 @@ defaultSettings.cfg = {
         MISC
     ]]------------
     --[[ Notifications ]] --
-    noticeSounds = { value = false, desc = "When notifications run do you want the sounds to play?" },
+    notificationSounds = { value = false, desc = "When notifications run do you want the sounds to play?" },
     --[[ Vehicles ]]--
     vehDamage = { value = false, desc = "True to disable vehicles damages, false to enable." },
     vehNoCollide = { value = false, desc = "True to disable collisions between vehicles and players"},

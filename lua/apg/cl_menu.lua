@@ -311,7 +311,7 @@ local function showNotice()
 
     notification.AddLegacy(msg, icon, 3+(level*3))
 
-    if canPlaySound:GetBool() and APG.cfg["noticeSounds"].value then
+    if canPlaySound:GetBool() and APG.cfg["notificationSounds"].value then
         surface.PlaySound(level == 1 and "buttons/button10.wav" or level == 2 and "ambient/alarms/klaxon1.wav" or "buttons/lightswitch2.wav")
     end
 
