@@ -36,10 +36,10 @@ function APG.checkStack( ent, pcount )
         ent:Remove()
         if not owner.APG_CantPickup then
             APG.blockPickup( owner )
-            APG.notify("Do not try to crash the server!", ply, 1)
+            APG.notify("Do not try to crash the server!", owner, 1)
 
-            local msg = owner:Nick().." ["..owner:SteamID().."]" .. " tried to unfreeze a stack of props!"
-            APG.notify(msg, "admins", 2)
+            local msg = owner:Nick() .. " [" .. owner:SteamID() .. "]" .. " tried to unfreeze a stack of props!"
+            APG.notify(msg, APG.cfg["lagFuncNotify"].value, 2)
         end
     end
 end
