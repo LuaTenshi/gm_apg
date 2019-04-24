@@ -25,7 +25,7 @@ function APG.canPhysGun( ent, ply )
     if ply.APG_CantPickup then return false end -- Is APG blocking the pickup?
     if ent.CPPICanPhysgun then return ent:CPPICanPhysgun(ply) end -- Let CPPI handle things from here.
 
-    return (not ent.PhysgunDisabled) -- By default everything can be picked up, unless it is PhysgunDisabled.
+    return not ent.PhysgunDisabled -- By default everything can be picked up, unless it is PhysgunDisabled.
 end
 
 function APG.isBadEnt( ent )
@@ -61,14 +61,14 @@ local function killvel(phys, freeze)
 
     phys:SetVelocity(vec)
     phys:SetVelocityInstantaneous(vec)
-    phys:AddAngleVelocity(phys:GetAngleVelocity()*-1)
+    phys:AddAngleVelocity(phys:GetAngleVelocity() * -1)
 
     phys:Sleep()
 end
 
 function APG.killVelocity(ent, extend, freeze, wake_target)
     local vec = Vector()
-    if ent.GetClass and ent:GetClass() == "player" then ent:SetVelocity(ent:GetVelocity()*-1) return end
+    if ent.GetClass and ent:GetClass() == "player" then ent:SetVelocity(ent:GetVelocity() * -1) return end
     ent:SetVelocity(vec)
 
     for i = 0, ent:GetPhysicsObjectCount() do killvel(ent:GetPhysicsObjectNum(i), freeze) end -- Includes self?
@@ -100,7 +100,7 @@ function APG.freezeIt( ent, extend )
     end
 end
 
-function APG.FindWAC(ent) -- Note: Add a config to disable this check.
+function APG.FindWAC(ent)
     if not APG.cfg["vehIncludeWAC"].value then return false end
 
     local e
@@ -129,20 +129,19 @@ function APG.IsVehicle(v, basic)
 end
 
 function APG.cleanUp( mode, notify, specific )
-    local mode = mode or "unfrozen"
+    mode = mode or "unfrozen"
     for _, v in next, specific or ents.GetAll() do
         APG.killVelocity(v,false)
         if not APG.isBadEnt(v) or not APG.getOwner( v ) or APG.IsVehicle(v) then continue end
-        if mode == "unfrozen" and v.APG_Frozen then -- Wether to clean only not frozen ents or all ents
+        if mode == "unfrozen" and v.APG_Frozen then -- Whether to clean only not frozen ents or all ents
             continue
         else
             v:Remove()
         end
     end
     -- TODO : Fancy notification system
-    if notify then
-        local msg = "Cleaned up (mode: "..mode.. ")"
-        APG.notify(msg, "all", 2)
+    if notify or APG.cfg["notificationLagFunc"].value then
+        APG.notify("Cleaned up (mode: " .. mode .. ")", APG.cfg["lagFuncNotify"].value, 2)
     end
 end
 
@@ -155,9 +154,9 @@ function APG.ghostThemAll( notify )
         APG.entGhost( v, false, true )
     end
     -- TODO : Fancy notification system
-    local msg = "Unfrozen props ghosted!"
-
-    APG.notify(msg, "all", 1)
+    if notify or APG.cfg["notificationLagFunc"].value then
+      APG.notify("Unfrozen props ghosted!", APG.cfg["lagFuncNotify"].value, 1)
+    end
 end
 
 function APG.freezeProps( notify )
@@ -166,8 +165,8 @@ function APG.freezeProps( notify )
         APG.freezeIt( v )
     end
     -- TODO : Fancy notification system
-    if notify then
-        APG.notify("Props frozen", "all", 0)
+    if notify or APG.cfg["notificationLagFunc"].value then
+      APG.notify("Props frozen", APG.cfg["lagFuncNotify"].value, 0)
     end
 end
 
@@ -222,7 +221,7 @@ function APG.smartCleanup( notify )
         end
     end
 
-    APG.freezeProps( notify )
+    APG.freezeProps()
 
     for _, v in next, bad do
         local count = 0
@@ -276,10 +275,9 @@ function APG.blockPickup( ply )
 end
 
 function APG.notify(msg, targets, level, log) -- The most advanced notify function in the world.
-    local logged = false
-
-    local msg = string.Trim(tostring(msg))
-    local level = level or 0
+    -- local logged = false -- not used, was there a reason this is here?
+    msg = string.Trim(tostring(msg))
+    level = level or 0
 
     if type(level) == "string" then
         level = string.lower(level)
@@ -314,7 +312,7 @@ function APG.notify(msg, targets, level, log) -- The most advanced notify functi
     msg = (string.Trim(msg or "") ~= "") and msg or nil
 
     if msg and (log or level >= 2) then
-        ServerLog("[APG] ",msg.."\n")
+        ServerLog("[APG] ", msg .. "\n")
     end
 
     if type(targets) ~= "table" then return false end
@@ -356,7 +354,7 @@ hook.Add("PhysgunPickup","APG_PhysgunPickup", function(ply, ent)
         end
     end
 
-    ent.APG_HeldBy = (ent.APG_HeldBy and istable(ent.APG_HeldBy.plys)) and ent.APG_HeldBy or {plys={}}
+    ent.APG_HeldBy = (ent.APG_HeldBy and istable(ent.APG_HeldBy.plys)) and ent.APG_HeldBy or { plys = {} }
     ent.APG_HeldBy.plys[ply:SteamID()] = ply
     ent.APG_HeldBy.last = {ply = ply, id = ply:SteamID()}
 
@@ -429,7 +427,7 @@ end)
 
 function APG.log(msg, ply)
     if type(ply) ~= "string" and IsValid(ply) then
-        ply:PrintMessage(3, msg.."\n")
+        ply:PrintMessage(3, msg .. "\n")
     else
         print(msg)
     end

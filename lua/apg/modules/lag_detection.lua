@@ -32,8 +32,8 @@ local mod = "lag_detection"
 ]]----------------------
 
 local lagFix = {
-    cleanup_all = function( notify ) APG.cleanUp( "all", notify ) end,
-    cleanup_unfrozen = function( notify ) APG.cleanUp( "unfrozen", notify ) end,
+    cleanup_all = function( notify ) APG.cleanUp( "all" ) end,
+    cleanup_unfrozen = function( notify ) APG.cleanUp( "unfrozen" ) end,
     ghost_unfrozen = APG.ghostThemAll,
     freeze_unfrozen = APG.freezeProps,
     smart_cleanup = APG.smartCleanup,
@@ -59,9 +59,8 @@ hook.Remove("APG_lagDetected", "APG_lagDetected_id") -- Sometimes, I dream about
 hook.Add("APG_lagDetected", "APG_lagDetected_id", function()
     if not APG then return end
     local func = APG.cfg["lagFunc"].value
-    local notify = APG.cfg["lagFuncNotify"].value
     if not lagFix[ func ] then return end
-    lagFix[ func ]( notify )
+    lagFix[ func ]()
 end)
 
 --[[--------------------

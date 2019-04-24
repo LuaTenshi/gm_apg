@@ -48,7 +48,7 @@ end
 ]]--------------------------------------------
 
 local defaultSettings = {}
-defaultSettings.modules = { -- Set to true of false to enable/disable module
+defaultSettings.modules = { -- Set to true to enable and false to disable  module
     ["ghosting"] = true,
     ["stack_detection"] = true,
     ["lag_detection"] = true,
@@ -87,13 +87,14 @@ defaultSettings.cfg = {
     bigLag = { value = 2, desc = "Maximum time (seconds) between 2 frames to trigger a cleanup"},
     lagFunc = { value = "ghost_unfrozen", desc = "Function ran on lag detected, see APG_lagFuncs." },
     lagFuncTime = { value = 20, desc = "Time (seconds) between 2 anti lag function (avoid spam)"},
-    lagFuncNotify = { value = 2, desc = "Notify : 0 - Disabled, 1 - Everyone, 2 - Admins only"}, -- Available soon
+    lagFuncNotify = { value = 2, desc = "Notify : 0 - Disabled, 1 - Everyone, 2 - Admins only"},
 
     --[[----------
         MISC
     ]]------------
     --[[ Notifications ]] --
     notificationSounds = { value = false, desc = "When notifications run do you want the sounds to play?" },
+    notificationLagFunc = { value = false, desc = "Do you want to run a notification with what APG_lagFuncs was ran? (only lagFuncNotify can see)" },
     --[[ Vehicles ]]--
     vehDamage = { value = false, desc = "True to disable vehicles damages, false to enable." },
     vehNoCollide = { value = false, desc = "True to disable collisions between vehicles and players"},
