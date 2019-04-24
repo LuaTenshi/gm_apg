@@ -85,7 +85,7 @@ end)
 --[[ FRZR9K ]]--
 
 local zero = Vector(0,0,0)
-local pstop = FrameTime()*3
+local pstop = FrameTime() * 3
 
 timerMake("frzr9k", pstop, 0, function()
 	if APG.cfg["sleepyPhys"].value then
@@ -107,8 +107,8 @@ local function collcall(ent, data)
 	local mep = data.PhysObject
 
 	if IsValid(ent) and IsValid(hit) and IsValid(mep) then
-		ent['frzr9k'] = ent['frzr9k'] or {}
-		local obj = ent['frzr9k']
+		ent["frzr9k"] = ent["frzr9k"] or {}
+		local obj = ent["frzr9k"]
 
 		obj.Collisions = (obj.Collisions or 0) + 1
 
@@ -141,13 +141,13 @@ local function collcall(ent, data)
 			obj.CollisionTime = (CurTime() + 5)
 		end
 
-		ent['frzr9k'] = obj
+		ent["frzr9k"] = obj
 	end
 end
 
 hookAdd("OnEntityCreated", "frzr9k", function(ent)
 	if APG.cfg["sleepyPhys"].value and APG.cfg["hookSP"].value then
-		timer.Simple(0.1, function() 
+		timer.Simple(0.1, function()
 			if IsValid(ent) and ent.GetPhysicsObject and IsValid(ent:GetPhysicsObject()) then
 				ent:AddCallback("PhysicsCollide", collcall)
 			end
@@ -157,34 +157,31 @@ end)
 
 -- Requires Fading Door Hooks --
 hookAdd("APG.FadingDoorToggle", "frzr9k", function(ent, faded)
-	if APG.cfg["sleepyPhys"].value and IsValid(ent) then
-		if faded then
-			local o = APG.getOwner(ent)
-			local pos = ent:GetPos()
-			local notify = false
+	if APG.cfg["sleepyPhys"].value and IsValid(ent) and faded then
+    local ply = APG.getOwner(ent)
+    local pos = ent:GetPos()
+    local notify = false
+    local doors = {}
+    local count = 0
 
-			local doors = {}
-			local count = 0
+    for _,v in next, ents.FindInSphere(pos, 3) do
+      if v ~= ent and IsValid(v) and v.isFadingDoor and APG.getOwner(v) == o then
+        table.insert(doors, v)
+        count = count + 1
+      end
+    end
 
-			for _,v in next, ents.FindInSphere(pos, 3) do
-				if v ~= ent and IsValid(v) and v.isFadingDoor and APG.getOwner(v) == o then
-					table.insert(doors, v)
-					count = count + 1
-				end
-			end
+    if count > 2 then
+      for _,v in next, doors do
+        v:Remove()
+      end
+      notify = true
+    end
 
-			if count > 2 then
-				for _,v in next, doors do
-					v:Remove()
-				end
-				notify = true
-			end
-
-			if notify then
-				o:ChatPrint('[APG] Some of your fading doors were removed.')
-			end
-		end
-	end
+    if notify then
+      APG.notify("[APG] Some of your fading doors were removed.", ply)
+    end
+  end
 end)
 
 --[[------------------------------------------

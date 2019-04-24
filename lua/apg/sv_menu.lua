@@ -20,7 +20,6 @@ local function recSettings( len, ply)
 
     settings = util.JSONToTable( settings )
     APG.cfg = settings.cfg
-    
     table.Merge(APG, settings)
     APG.reload()
 end
@@ -72,13 +71,13 @@ local function contextCMD(_,ply)
     if cmd == "addghost" then
         if not APG.cfg.bad_ents.value[class] then
             APG.cfg.bad_ents.value[class] = true
-            APG.notify("\""..class.."\" added to Ghost List!", ply)
+            APG.notify("\"" .. class .. "\" added to Ghost List!", ply)
         else
             APG.notify("This class is already listed!", ply)
         end
     elseif cmd == "remghost" then
         APG.cfg.bad_ents.value[class] = nil
-        APG.notify("\""..class.."\" removed from the Ghost List!", ply)
+        APG.notify("\"" .. class .. "\" removed from the Ghost List!", ply)
     elseif cmd == "clearowner" then
         if not checkOwner(owner, ply) then return end
         cleanup.CC_Cleanup(owner,"gmod_cleanup",{})
@@ -89,13 +88,13 @@ local function contextCMD(_,ply)
         for _,v in next, ents.GetAll() do
             if not (IsValid(v) and APG.getOwner(v) == owner) then continue end
             if not APG.isBadEnt(v) then continue end
-            if not v.APG_Frozen then 
+            if not v.APG_Frozen then
                 SafeRemoveEntity(v)
                 count = count + 1
             end
         end
 
-        APG.notify(tostring(count).." entities have been removed!", ply)
+        APG.notify(tostring(count) .. " entities have been removed!", ply)
     elseif cmd == "getownercount" then
         if not checkOwner(owner, ply) then return end
 
@@ -106,7 +105,7 @@ local function contextCMD(_,ply)
             end
         end
 
-        APG.notify(tostring(owner:Nick()).." has "..count..(count == 1 and " entity." or " entities."), ply)
+        APG.notify(tostring(owner:Nick()) .. " has " .. count .. (count == 1 and " entity." or " entities."), ply)
     elseif cmd == "freezeclass" then
         local count = 0
         for _,v in next, ents.FindByClass(class) do
@@ -115,7 +114,7 @@ local function contextCMD(_,ply)
                 APG.killVelocity(v, false, true, false)
             end
         end
-        APG.notify((count or 0)..(count == 1 and " Entity" or " Entities").." Frozen", ply)
+        APG.notify((count or 0) .. (count == 1 and " Entity" or " Entities") .. " Frozen", ply)
     elseif cmd == "sleepclass" then
         local count = 0
         for _,v in next, ents.FindByClass(class) do
@@ -124,7 +123,7 @@ local function contextCMD(_,ply)
                 APG.killVelocity(v, false, false, false)
             end
         end
-        APG.notify((count or 0)..(count == 1 and " Entity is" or " Entities are").." now Sleeping", ply)
+        APG.notify((count or 0) .. (count == 1 and " Entity is" or " Entities are") .. " now Sleeping", ply)
     end
 
     if cmd == "addghost" or cmd == "remghost" then

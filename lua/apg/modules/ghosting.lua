@@ -31,14 +31,10 @@ local mod = "ghosting"
 local ENT = FindMetaTable( "Entity" )
 APG.oSetColGroup = APG.oSetColGroup or ENT.SetCollisionGroup
 function ENT:SetCollisionGroup( group )
-	if APG.isBadEnt( self ) and APG.getOwner( self ) then
-		if group == COLLISION_GROUP_NONE then
-			if not self.APG_Frozen then
+	if APG.isBadEnt( self ) and APG.getOwner( self ) and group == COLLISION_GROUP_NONE and not self.APG_Frozen  then
 				group = COLLISION_GROUP_INTERACTIVE
-			end
 --[[        elseif group == COLLISION_GROUP_INTERACTIVE and APG.isTrap( self ) then
 			group = COLLISION_GROUP_DEBRIS_TRIGGER --]]
-		end
 	end
 	return APG.oSetColGroup( self, group )
 end
@@ -121,7 +117,7 @@ function APG.entGhost( ent, enforce, noCollide )
 
 		timer.Simple(0, function()
 			if not IsValid(ent) then return end
-			
+
 			if not ent.APG_oldColor then
 				ent.APG_oldColor = ent:GetColor()
 
@@ -146,7 +142,7 @@ function APG.entGhost( ent, enforce, noCollide )
 		else
 			ent:SetCollisionGroup( COLLISION_GROUP_DEBRIS_TRIGGER )
 		end
-		
+
 		ent:CollisionRulesChanged()
 	end
 end
@@ -160,7 +156,7 @@ function APG.entUnGhost( ent, ply, failmsg )
 		if not ent.APG_isTrap then
 			ent.APG_Ghosted  = false
 			ent:DrawShadow(true)
-			
+
 			ent:SetRenderMode(ent.APG_oldRenderMode or RENDERMODE_NORMAL)
 			ent:SetColor(ent.APG_oldColor or Color(255,255,255,255))
 			ent.APG_oldColor = false
@@ -177,7 +173,7 @@ function APG.entUnGhost( ent, ply, failmsg )
 
 			return true
 		else
-			APG.notify((failmsg or "There is something in this prop!"), ply, 1)
+			APG.notify(failmsg or "There is something in this prop!", ply, 1)
 			ent:SetCollisionGroup( COLLISION_GROUP_WORLD )
 
 			return false
@@ -201,7 +197,7 @@ end
 APG.hookRegister( mod, "PhysgunPickup","APG_makeGhost",function(ply, ent)
 	if not APG.canPhysGun( ent, ply ) then return end
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
-	
+
 	ent.APG_Picked = true
 
 	if not APG.cfg["allowPK"].value then
@@ -219,7 +215,7 @@ APG.hookRegister( mod, "PlayerUnfrozeObject", "APG_unFreezeInteract", function (
 	if not APG.canPhysGun( ent, ply ) then return end
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
 	if APG.cfg["alwaysFrozen"].value then return false end -- Do not unfreeze if Always Frozen is enabled !
-	if ent:GetCollisionGroup( ) != COLLISION_GROUP_WORLD then
+	if ent:GetCollisionGroup( ) ~= COLLISION_GROUP_WORLD then
 		ent:SetCollisionGroup( COLLISION_GROUP_INTERACTIVE )
 	end
 end)
@@ -264,7 +260,7 @@ APG.hookRegister( mod, "OnEntityCreated", "APG_noColOnCreate", function( ent )
 
 		DropEntityIfHeld(ent)
 		ent:ForcePlayerDrop()
-		
+
 		if IsValid( owner ) and owner:IsPlayer() then
 			local pObj = ent:GetPhysicsObject()
 			if IsValid(pObj) then
@@ -285,9 +281,9 @@ end)
 
 local BlockedProperties = {"collision", "persist", "editentity", "drive", "ignite", "statue"}
 APG.hookRegister(mod, "CanProperty", "APG_canProperty", function(ply, prop, ent)
-	local prop = tostring(prop)
-	if( table.HasValue(BlockedProperties,prop) and ent.APG_Ghosted ) then
-		APG.log("Cannot set "..prop.." properties on ghosted entities!", ply)
+	prop = tostring(prop)
+	if ( table.HasValue(BlockedProperties,prop) and ent.APG_Ghosted ) then
+		APG.log( "Cannot set " .. prop .. " properties on ghosted entities!", ply)
 		return false
 	end
 end)
@@ -320,7 +316,7 @@ APG.hookRegister(mod, "APG.FadingDoorToggle", "APG_FadingDoor", function(ent, is
 
 					timer.Simple(1, function()
 						if IsValid(ply) and IsValid(ent) then
-							local istrap = APG.isTrap(ent)
+							istrap = APG.isTrap(ent)
 							ent.APG_Ghosted = false
 
 							ent:oldFadeDeactivate()

@@ -48,21 +48,19 @@ end)
     Disable prop damage
 ]]----------------------
 APG.hookRegister(mod, "EntityTakeDamage","APG_noPropDmg",function(target, dmg)
-    local atk, ent = dmg:GetAttacker(), dmg:GetInflictor()
-    if not APG.cfg["allowPK"].value then
-        if APG.isBadEnt( ent ) or dmg:GetDamageType() == DMG_CRUSH or (APG.cfg["vehDamage"].value and isVehDamage(dmg,atk,ent)) then
-            dmg:SetDamage(0)
-            return true -- Returning true overrides and blocks all related damage, it also prevents the hook from running any further preventing unintentional damage from other addons.
-        end
-    end
+  local atk, ent = dmg:GetAttacker(), dmg:GetInflictor()
+  if not APG.cfg["allowPK"].value and APG.isBadEnt( ent ) or dmg:GetDamageType() == DMG_CRUSH or (APG.cfg["vehDamage"].value and isVehDamage(dmg,atk,ent)) then
+    dmg:SetDamage(0)
+    return true -- Returning true overrides and blocks all related damage, it also prevents the hook from running any further preventing unintentional damage from other addons.
+  end
 end)
 
 --[[--------------------
     Block Physgun Reload
 ]]----------------------
-APG.hookRegister(mod, "OnPhysgunReload", "APG_blockPhysgunReload", function(_, ply) 
+APG.hookRegister(mod, "OnPhysgunReload", "APG_blockPhysgunReload", function(_, ply)
     if APG.cfg["blockPhysgunReload"].value then
-        -- APG.notify("Physgun Reloading is Currently Disabled", ply, 1)
+        --APG.notify("Physgun Reloading is Currently Disabled", ply, 1)
         return false
     end
 end)
@@ -72,7 +70,7 @@ end)
 ]]----------------------
 APG.timerRegister( mod, "APG_autoFreeze", APG.cfg["autoFreezeTime"].value, 0, function()
     if APG.cfg["autoFreeze"].value then
-        APG.freezeProps( false )
+        APG.freezeProps()
     end
 end)
 

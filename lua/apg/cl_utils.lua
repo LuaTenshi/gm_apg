@@ -81,14 +81,14 @@ end
 function utils.mainSwitch( x, y, on )
     draw.RoundedBox(10,x,y,45,18,Color( 58, 58, 58, 255))
     if on then
-        draw.RoundedBox(10,x+1,y+1,45-2,18-2,Color( 11,70,30, 255))
-        draw.DrawText( "ON", "APG_title_font",x+8, y+2, Color( 189, 189, 189 ), 3 )
-        draw.RoundedBox(10,x+27,y,18,18,Color( 88, 88, 88, 255))
+        draw.RoundedBox(10, x + 1, y + 1, 45 - 2, 18 - 2,Color( 11,70,30, 255))
+        draw.DrawText( "ON", "APG_title_font", x + 8, y + 2, Color( 189, 189, 189 ), 3 )
+        draw.RoundedBox(10, x + 27, y, 18, 18, Color( 88, 88, 88, 255))
     else
         --draw.RoundedBox(10,x,y,45,18,Color( 110, 28, 38, 255))
-        draw.RoundedBox(10,x+1,y+1,43,16,Color( 34, 34, 34, 255))
-        draw.DrawText( "OFF", "APG_title_font",x+21, y+2, Color( 189, 189, 189), 3 )
-        draw.RoundedBox(10,x,y,18,18,Color( 88, 88, 88, 255))
+        draw.RoundedBox(10, x + 1, y + 1, 43, 16, Color( 34, 34, 34, 255))
+        draw.DrawText( "OFF", "APG_title_font", x + 21, y + 2, Color( 189, 189, 189), 3 )
+        draw.RoundedBox(10, x, y, 18, 18, Color( 88, 88, 88, 255))
     end
     --draw.RoundedBox(0,x+20,y,1,18,Color( 88, 88, 88, 255))
 end
@@ -100,7 +100,7 @@ function utils.switch( panel, x, y, w, h, text, var )
         button:SetText("")
         button.Paint = function(slf, w, h)
             local enabled = APG.cfg[ var ].value
-                draw.RoundedBox(0,0,h*0.95,w-5,1, Color(250, 250, 250,1))
+                draw.RoundedBox(0,0, h * 0.95, w - 5, 1, Color(250, 250, 250,1))
                 draw.DrawText( text, "APG_element2_font",0, 0, Color( 189, 189, 189), 3 )
                 utils.mainSwitch( w-45, 0, enabled )
         end
@@ -111,22 +111,22 @@ end
 
 function utils.numSlider( panel, x, y, w, h, text, var, min, max, decimal )
     local slider = vgui.Create( "DNumSlider", panel )
-        slider:SetPos( x, y )           // Set the position
-        slider:SetSize( w, h )      // Set the size
-        slider:SetText( "" )    // Set the text above the slider
-        slider:SetMin( min )                // Set the minimum number you can slide to
-        slider:SetMax( max )                // Set the maximum number you can slide to
-        slider:SetDecimals( decimal )           // Decimal places - zero for whole number
+        slider:SetPos( x, y )          -- Set the position
+        slider:SetSize( w, h )         -- Set the size
+        slider:SetText( "" )           -- Set the text above the slider
+        slider:SetMin( min )           -- Set the minimum number you can slide to
+        slider:SetMax( max )           -- Set the maximum number you can slide to
+        slider:SetDecimals( decimal )  -- Decimal places - zero for whole number
         slider:SetValue( APG.cfg[var].value )
         slider.OnValueChanged = function( self, newValue )
             APG.cfg[var].value = newValue
         end
         slider.Paint = function(slf, w, h)
-            draw.RoundedBox(0,0,h*0.97,w-5,1, Color(250, 250, 250,1))
+            draw.RoundedBox(0,0, h * 0.97, w - 5,1, Color(250, 250, 250,1))
             draw.DrawText( text, "APG_element2_font",0, 0, Color( 189, 189, 189), 3 )
         end
         slider.Slider.Paint = function( slf, w, h)
-            draw.RoundedBox(0,8,9-1,w-16,1+2, Color(250, 250, 250,1))
+            draw.RoundedBox(0,8, 9 - 1, w - 16, 1 + 2, Color(250, 250, 250,1))
         end
         slider.Slider.Knob.Paint = function(slf, w, h)
             draw.RoundedBox(6,0,4,10,10,Color( 11,70,30, 255))
@@ -153,7 +153,7 @@ function utils.textEntry( panel, x, y, w, h, text, var )
         label:SetFont("APG_element2_font")
         label:SetColor( Color( 189, 189, 189) )
         label.Paint = function(self, w, h)
-            draw.RoundedBox(0,0,h*0.97,w,1, Color(250, 250, 250,1))
+            draw.RoundedBox(0, 0, h * 0.97, w, 1, Color(250, 250, 250,1))
         end
     local txtEntry = vgui.Create( "DTextEntry", panel ) -- create the form as a child of frame
         txtEntry:SetPos( x + 267, y-1 )
@@ -172,7 +172,7 @@ function utils.comboBox(panel, x, y, w, h, text, var, content)
         label:SetFont("APG_element2_font")
         label:SetColor( Color( 189, 189, 189) )
         label.Paint = function(self, w, h)
-            draw.RoundedBox(0,0,h*0.97,w,1, Color(250, 250, 250,1))
+            draw.RoundedBox(0, 0, h * 0.97, w, 1, Color(250, 250, 250,1))
         end
     local comboBox = vgui.Create( "DComboBox", panel )
         comboBox:SetPos( x + 267, y-2 )

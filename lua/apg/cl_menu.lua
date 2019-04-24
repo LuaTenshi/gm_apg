@@ -79,7 +79,7 @@ local function APGBuildGhostPanel()
     local dList = vgui.Create("DListView", panel)
     dList:Clear()
     dList:SetPos( 180, 55 )
-    dList:SetSize(panel:GetWide() - 185, panel:GetTall()-5-55)
+    dList:SetSize(panel:GetWide() - 185, panel:GetTall() - 5 - 55)
     dList:SetMultiSelect(false)
     dList:SetHideHeaders(false)
     dList:AddColumn("Class")
@@ -87,7 +87,7 @@ local function APGBuildGhostPanel()
 
     function dList:OnRowRightClick( id, line )
         local key = line:GetColumnText(1)
-        local value = !tobool(line:GetColumnText(2))
+        local value = not tobool(line:GetColumnText(2))
         line:SetColumnText(2, value)
         APG.cfg["bad_ents"].value[key] = value
     end
@@ -176,7 +176,7 @@ local function openMenu( len )
 
     local APG_Main = vgui.Create( "DFrame" )
         APG_Main:SetSize( 550 , 320)
-        APG_Main:SetPos( ScrW()/2- APG_Main:GetWide()/2, ScrH()/2 - APG_Main:GetTall()/2)
+        APG_Main:SetPos( ScrW() / 2- APG_Main:GetWide() / 2, ScrH() / 2 - APG_Main:GetTall() / 2)
         APG_Main:SetTitle( "" )
         APG_Main:SetVisible( true )
         APG_Main:SetDraggable( true )
@@ -204,7 +204,7 @@ local function openMenu( len )
     saveButton:SetSize(72,16)
     saveButton:SetText('')
     saveButton.DoClick = function()
-        local settings = APG
+        settings = APG
         settings = util.TableToJSON( settings )
         settings = util.Compress( settings )
         net.Start("apg_settings_c2s")
@@ -215,7 +215,7 @@ local function openMenu( len )
     end
     saveButton.Paint = function(i,w,h)
         draw.RoundedBox(0,0,0,w,h,Color(255, 255, 255,3))
-        draw.DrawText( "Save settings", "APG_title2_font",w/2, 1, Color( 189, 189, 189), 1 )
+        draw.DrawText( "Save settings", "APG_title2_font",w / 2, 1, Color( 189, 189, 189), 1 )
     end
 
     -- Side bar
@@ -249,7 +249,7 @@ local function openMenu( len )
         button.Paint = function(slf, w, h)
             local enabled = APG.modules[k]
 
-            draw.RoundedBox(0,0,h*0.85,w-5,1, Color(0, 96, 0,255))
+            draw.RoundedBox(0,0,h * 0.85,w-5,1, Color(0, 96, 0,255))
             local text = utils.getNiceName(k) .. " module "
             draw.DrawText( text, "APG_mainPanel_font",5, 8, Color( 189, 189, 189), 3 )
             utils.mainSwitch( w-48, 7.5, enabled )
@@ -268,7 +268,7 @@ local function openMenu( len )
         button:SetText("")
         button.DoClick = function()
             for l,m in next, APG_panels do
-                if k != l then
+                if k ~= l then
                     APG_panels[l]:SetVisible(false)
                 else
                     APG_panels[l]:SetVisible(true)
@@ -279,15 +279,15 @@ local function openMenu( len )
         button.Paint = function(_,w,h)
             local name = utils.getNiceName(k)
             if button.Hovered then
-                draw.RoundedBox(5,0,0,w,h,Color(46, 46, 46,255))
-                draw.RoundedBox(0,2,2,w-4,h-4,Color( 36, 36,36, 255))
+                draw.RoundedBox(5, 0, 0, w, h, Color(46, 46, 46,255))
+                draw.RoundedBox(0, 2, 2, w - 4, h - 4, Color( 36, 36,36, 255))
             end
             if APG_panels[k]:IsVisible()  then
-                draw.RoundedBox(0,0,0,w,h,Color( 36, 36,36, 255))
-                draw.RoundedBox(0,w*0.15,h*0.72,w*0.7,1, Color(0, 96, 0,255))
+                draw.RoundedBox(0, 0, 0, w, h, Color( 36, 36,36, 255))
+                draw.RoundedBox(0, w * 0.15, h * 0.72, w * 0.7, 1, Color(0, 96, 0,255))
             end
 
-            draw.DrawText( name, "APG_sideBar_font",(size - name:len())/2, h*0.35, Color( 189, 189, 189), 1)
+            draw.DrawText( name, "APG_sideBar_font",(size - name:len()) / 2, h * 0.35, Color( 189, 189, 189), 1)
         end
         i = i + 1
     end
@@ -309,7 +309,7 @@ local function showNotice()
     if string.Trim(msg) == "" then return end
     icon = level == 0 and NOTIFY_GENERIC or level == 1 and NOTIFY_CLEANUP or level == 2 and NOTIFY_ERROR
 
-    notification.AddLegacy(msg, icon, 3+(level*3))
+    notification.AddLegacy(msg, icon, 3 + (level * 3))
 
     if canPlaySound:GetBool() and APG.cfg["notificationSounds"].value then
         surface.PlaySound(level == 1 and "buttons/button10.wav" or level == 2 and "ambient/alarms/klaxon1.wav" or "buttons/lightswitch2.wav")
@@ -327,7 +327,7 @@ properties.Add( "apgoptions", {
 
     Filter = function( self, ent, ply ) -- A function that determines whether an entity is valid for this property
         if not ply:IsSuperAdmin() then return false end
-        return (ent.GetClass and ent:GetClass() and IsValid(ent) and ent:EntIndex() > 0)
+        return ent.GetClass and ent:GetClass() and IsValid(ent) and ent:EntIndex() > 0
     end,
     MenuOpen = function( self, option, ent, tr )
         local submenu = option:AddSubMenu()
@@ -394,7 +394,7 @@ properties.Add( "apgoptions", {
             if IsValid(owner) and owner.SteamID then
                 local id = tostring(owner:SteamID())
                 SetClipboardText(id)
-                chat.AddText(Color(0,255,0), "\n\""..id.."\" has been copied to your clipboard.\n")
+                chat.AddText(Color(0,255,0), "\n\"" .. id .. "\" has been copied to your clipboard.\n")
             else
                chat.AddText(Color(255,0,0), "\nOops, that's not a Player!\n")
             end
