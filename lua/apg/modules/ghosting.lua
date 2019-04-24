@@ -11,7 +11,7 @@
 	 GHOSTING/UNGHOSTING MODULE
 	============================
 
-	Developper informations :
+	Developer informations :
 	---------------------------------
 	Used variables :
 		ghost_color = { value = Color(34, 34, 34, 220), desc = "Color set on ghosted props" }
@@ -173,7 +173,7 @@ function APG.entUnGhost( ent, ply, failmsg )
 
 			return true
 		else
-			APG.notify(failmsg or "There is something in this prop!", ply, 1)
+			APG.userNotification(failmsg or "There is something in this prop!", ply, 1)
 			ent:SetCollisionGroup( COLLISION_GROUP_WORLD )
 
 			return false
@@ -323,7 +323,7 @@ APG.hookRegister(mod, "APG.FadingDoorToggle", "APG_FadingDoor", function(ent, is
 							ent:SetCollisionGroup(COLLISION_GROUP_INTERACTIVE)
 
 							if IsValid(istrap) then
-								APG.notify("Unable to unstuck objects from fading door!", ply, 1)
+								APG.userNotification("Unable to unstuck objects from fading door!", ply, 1)
 								APG.entGhost(ent)
 							end
 						end

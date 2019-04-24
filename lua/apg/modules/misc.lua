@@ -11,7 +11,7 @@
         MISCELLANEOUS MODULE
     ============================
 
-    Developper informations :
+    Developer informations :
     ---------------------------------
     Used variables :
         vehDamage = { value = true, desc = "True to enable vehicles damages, false to disable." }
@@ -60,7 +60,7 @@ end)
 ]]----------------------
 APG.hookRegister(mod, "OnPhysgunReload", "APG_blockPhysgunReload", function(_, ply)
     if APG.cfg["blockPhysgunReload"].value then
-        --APG.notify("Physgun Reloading is Currently Disabled", ply, 1)
+        --APG.userNotification("Physgun Reloading is Currently Disabled", ply, 1)
         return false
     end
 end)

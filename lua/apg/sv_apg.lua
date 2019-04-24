@@ -128,7 +128,7 @@ function APG.IsVehicle(v, basic)
     return APG.IsVehicle(parent, true)
 end
 
-function APG.cleanUp( mode, notify, specific )
+function APG.cleanUp( mode, notification, specific )
     mode = mode or "unfrozen"
     for _, v in next, specific or ents.GetAll() do
         APG.killVelocity(v,false)
@@ -140,12 +140,12 @@ function APG.cleanUp( mode, notify, specific )
         end
     end
     -- TODO : Fancy notification system
-    if notify or APG.cfg["notificationLagFunc"].value then
-        APG.notify("Cleaned up (mode: " .. mode .. ")", APG.cfg["lagFuncNotify"].value, 2)
+    if notification or APG.cfg["notificationLagFunc"].value then
+        APG.userNotification("Cleaned up (mode: " .. mode .. ")", APG.cfg["notificationLevel"].value, 2)
     end
 end
 
-function APG.ghostThemAll( notify )
+function APG.ghostThemAll( notification )
     if not APG.modules[ "ghosting" ] then
         return APG.log("[APG] Warning: Tried to ghost props but ghosting is disabled!")
     end
@@ -154,19 +154,19 @@ function APG.ghostThemAll( notify )
         APG.entGhost( v, false, true )
     end
     -- TODO : Fancy notification system
-    if notify or APG.cfg["notificationLagFunc"].value then
-      APG.notify("Unfrozen props ghosted!", APG.cfg["lagFuncNotify"].value, 1)
+    if notification or APG.cfg["notificationLagFunc"].value then
+      APG.userNotification("Unfrozen props ghosted!", APG.cfg["notificationLevel"].value, 1)
     end
 end
 
-function APG.freezeProps( notify )
+function APG.freezeProps( notification )
     for _, v in next, ents.GetAll() do
         if not APG.isBadEnt(v) or not APG.getOwner( v ) then continue end
         APG.freezeIt( v )
     end
     -- TODO : Fancy notification system
-    if notify or APG.cfg["notificationLagFunc"].value then
-      APG.notify("Props frozen", APG.cfg["lagFuncNotify"].value, 0)
+    if notification or APG.cfg["notificationLagFunc"].value then
+      APG.userNotification("Props frozen", APG.cfg["notificationLevel"].value, 0)
     end
 end
 
@@ -188,7 +188,7 @@ local function GetPhysenv()
     return {con = con, env = env}
 end
 
-function APG.smartCleanup( notify )
+function APG.smartCleanup( notification )
     local defaults = GetPhysenv()
     local phys = table.Copy(defaults.env)
 
@@ -274,7 +274,8 @@ function APG.blockPickup( ply )
     end)
 end
 
-function APG.notify(msg, targets, level, log) -- The most advanced notify function in the world.
+function APG.userNotification(msg, targets, level, log) -- The most advanced notification function in the world.
+    if not APG.modules["notification"] then print("notifications disabled") return end
     -- local logged = false -- not used, was there a reason this is here?
     msg = string.Trim(tostring(msg))
     level = level or 0
@@ -320,13 +321,14 @@ function APG.notify(msg, targets, level, log) -- The most advanced notify functi
     for _,v in next, targets do
         if not IsValid(v) then continue end
         net.Start("apg_notice_s2c")
-            net.WriteUInt(level,3)
+            net.WriteUInt(level, 3)
             net.WriteString(msg)
         net.Send(v)
     end
 
     return true
 end
+
 
 --[[------------------------------------------
     Entity pickup part

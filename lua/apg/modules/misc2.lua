@@ -29,7 +29,7 @@ end
 
 hookAdd("CanTool", "APG_canTool", function(ply, tr, tool)
 	if IsValid(tr.Entity) and tr.Entity.APG_Ghosted then
-		APG.notify("Cannot use tool on ghosted entity!", ply, 1)
+		APG.userNotification("Cannot use tool on ghosted entity!", ply, 1)
 		return false
 	end
 	if APG.cfg["thFadingDoors"].value and tool == "fading_door" then
@@ -160,7 +160,7 @@ hookAdd("APG.FadingDoorToggle", "frzr9k", function(ent, faded)
 	if APG.cfg["sleepyPhys"].value and IsValid(ent) and faded then
     local ply = APG.getOwner(ent)
     local pos = ent:GetPos()
-    local notify = false
+    local notification = false
     local doors = {}
     local count = 0
 
@@ -175,11 +175,11 @@ hookAdd("APG.FadingDoorToggle", "frzr9k", function(ent, faded)
       for _,v in next, doors do
         v:Remove()
       end
-      notify = true
+      notification = true
     end
 
-    if notify then
-      APG.notify("[APG] Some of your fading doors were removed.", ply)
+    if notification then
+      APG.userNotification("[APG] Some of your fading doors were removed.", ply)
     end
   end
 end)

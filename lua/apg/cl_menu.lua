@@ -20,6 +20,14 @@ local function APGBuildStackPanel()
     utils.numSlider(panel, 0, 75, 500, 20, "Stack distance (gmod units)", "stackArea", 5, 50, 0)
 end
 
+local function APGBuildStackPanel()
+    local panel = APG_panels["stack_detection"]
+    panel.Paint = function( i, w, h) end
+
+    utils.numSlider(panel, 0, 40, 500, 20, "Maximum stacked ents", "stackMax", 3, 50, 0 )
+    utils.numSlider(panel, 0, 75, 500, 20, "Stack distance (gmod units)", "stackArea", 5, 50, 0)
+end
+
 local function APGBuildMiscPanel()
     local panel = APG_panels["misc"]
     panel.Paint = function( i, w, h) end
@@ -42,7 +50,16 @@ local function APGBuildLagPanel()
     utils.numSlider(panel, 0, 110, 500, 20, "Heavy lag trigger (seconds)", "bigLag", 1, 5, 1)
     utils.comboBox(panel, 0, 145, 500, 20, "Lag fix function", "lagFunc", APG_lagFuncs)
     utils.numSlider(panel, 0, 180, 500, 20, "Lag func. delay (seconds)", "lagFuncTime", 1, 300, 0)
-    --utils.numSlider(panel, 0, 215, 500, 20, "Notification mode ", "lagFuncNotify", 0, 2, 0)
+    utils.numSlider(panel, 0, 215, 500, 20, "Notification mode ", "notificationLevel", 0, 2, 0)
+end
+
+local function APGBuildNotificationPanel()
+    local panel = APG_panels["notification"]
+    panel.Paint = function( i, w, h) end
+
+    utils.switch(panel, 0, 40, 395, 20, "Notification Sounds", "notificationSounds")
+    utils.numSlider(panel, 0, 75, 500, 20, "Notification Level", "notificationLevel", 1, 2, 0)
+    utils.switch(panel, 0, 110, 395, 20, "Do you want to show which lag function ran?", "notificationLagFunc")
 end
 
 local function APGBuildToolHackPanel()
@@ -295,6 +312,7 @@ local function openMenu( len )
     APGBuildGhostPanel()
     APGBuildLagPanel()
     APGBuildStackPanel()
+    APGBuildNotificationPanel()
     APGBuildToolHackPanel()
 end
 

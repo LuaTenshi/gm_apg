@@ -11,7 +11,7 @@
         LAG DETECTION MODULE
     ============================
 
-    Developper informations :
+    Developer informations :
     ---------------------------------
     Used variables :
         lagTrigger = { value = 75, desc = "% difference between current lag and average lag."}
@@ -32,8 +32,8 @@ local mod = "lag_detection"
 ]]----------------------
 
 local lagFix = {
-    cleanup_all = function( notify ) APG.cleanUp( "all" ) end,
-    cleanup_unfrozen = function( notify ) APG.cleanUp( "unfrozen" ) end,
+    cleanup_all = function( notification ) APG.cleanUp( "all" ) end,
+    cleanup_unfrozen = function( notification ) APG.cleanUp( "unfrozen" ) end,
     ghost_unfrozen = APG.ghostThemAll,
     freeze_unfrozen = APG.freezeProps,
     smart_cleanup = APG.smartCleanup,
@@ -55,8 +55,8 @@ function APG.process( tab )
     return sum / (#tab) , max
 end
 
-hook.Remove("APG_lagDetected", "APG_lagDetected_id") -- Sometimes, I dream about cheese.
-hook.Add("APG_lagDetected", "APG_lagDetected_id", function()
+hook.Remove("APG_lagDetected", "APG_RUN_lagDetected") -- Sometimes, I dream about cheese.
+hook.Add("APG_lagDetected", "APG_RUN_lagDetected", function()
     if not APG then return end
     local func = APG.cfg["lagFunc"].value
     if not lagFix[ func ] then return end
@@ -131,9 +131,8 @@ APG.hookRegister( mod, "Think", "APG_detectLag", function()
             if not pause then
                 pause = true
                 timer.Simple( APG.cfg["lagFuncTime"].value, function() pause = false end)
-
-                local msg = "WARNING LAG DETECTED : Running lag fix function!"
-                APG.notify(msg, APG.cfg["lagFuncNotify"].value, 2)
+                
+                APG.userNotification("WARNING LAG DETECTED : Running lag fix function!", APG.cfg["notificationLevel"].value, 2)
 
                 hook.Run( "APG_lagDetected" )
             end

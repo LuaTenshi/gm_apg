@@ -25,7 +25,7 @@ APG.modules = APG.modules or {}
     Your very own custom function
     This function will run whenever lag is detected on your server!
 ]]------------
-function APG.customFunc( notify )
+function APG.customFunc( notification )
     -- Do something
 end
 
@@ -54,6 +54,7 @@ defaultSettings.modules = { -- Set to true to enable and false to disable  modul
     ["lag_detection"] = true,
     ["misc"] = true,
     ["misc2"] = true,
+    ["notification"] = true,
 }
 
 defaultSettings.cfg = {
@@ -71,47 +72,129 @@ defaultSettings.cfg = {
         },
         desc = "Entities to ghost/control/secure (true if exact name, false if it is a pattern"},
 
-    alwaysFrozen = { value = false  , desc = "Set to true to auto freeze props on physgun drop (aka APA_FreezeOnDrop)" },
+    alwaysFrozen = {
+      value = false,
+      desc = "Set to true to auto freeze props on physgun drop (aka APA_FreezeOnDrop)"
+    },
 
     --[[----------
         Stack detection module
     ]]------------
-    stackMax = { value = 20, desc = "Max amount of entities stacked in a small area"},
-    stackArea = { value = 15, desc = "Sphere radius for stack detection (gmod units)"},
+    stackMax = {
+      value = 20,
+      desc = "Max amount of entities stacked in a small area"
+    },
+    stackArea = {
+      value = 15,
+      desc = "Sphere radius for stack detection (gmod units)"
+    },
 
     --[[----------
         Lag detection module
     ]]------------
-    lagTrigger = { value = 75, desc = "[Default: 75%] Differential threshold between current lag and average lag."},
-    lagsCount = { value = 8, desc = "Number of consectuives laggy frames in order to run a cleanup."},
-    bigLag = { value = 2, desc = "Maximum time (seconds) between 2 frames to trigger a cleanup"},
-    lagFunc = { value = "ghost_unfrozen", desc = "Function ran on lag detected, see APG_lagFuncs." },
-    lagFuncTime = { value = 20, desc = "Time (seconds) between 2 anti lag function (avoid spam)"},
-    lagFuncNotify = { value = 2, desc = "Notify : 0 - Disabled, 1 - Everyone, 2 - Admins only"},
+    lagTrigger = {
+      value = 75,
+      desc = "[Default: 75%] Differential threshold between current lag and average lag."
+    },
+    lagsCount = {
+      value = 8,
+      desc = "Number of consectuives laggy frames in order to run a cleanup."
+    },
+    bigLag = {
+      value = 2,
+      desc = "Maximum time (seconds) between 2 frames to trigger a cleanup"
+    },
+    lagFunc = {
+      value = "ghost_unfrozen",
+      desc = "Function ran on lag detected, see APG_lagFuncs."
+    },
+    lagFuncTime = {
+      value = 20,
+      desc = "Time (seconds) between 2 anti lag function (avoid spam)"
+    },
 
     --[[----------
         MISC
     ]]------------
+
     --[[ Notifications ]] --
-    notificationSounds = { value = false, desc = "When notifications run do you want the sounds to play?" },
-    notificationLagFunc = { value = false, desc = "Do you want to run a notification with what APG_lagFuncs was ran? (only lagFuncNotify can see)" },
+    notificationSounds = {
+      value = false,
+      desc = "When notifications run do you want the sounds to play?"
+    },
+    notificationLevel = {
+      value = 2,
+      desc = "notification : 0 - Disabled, 1 - Everyone, 2 - Staff only (set in notificationRanks)"
+    },
+    notificationLagFunc = {
+      value = false,
+      desc = "Do you want the notificationLevel to see the lagFunc that ran? (refer to APG_lagFuncs)"
+    },
+    notificationULibInheritance = {
+      value = true,
+      desc = "Do you want to use inheritance for notificatioRanks? (only works with ULIB/ULX)"
+    },
+    notificationRanks = {
+      value = {"trialmoduser", "premium_trialmoduser", "supremium_trialmoduser", "extremium_trialmoduser"},
+      desc = "The ranks that you want to see the notification"
+    },
+
     --[[ Vehicles ]]--
-    vehDamage = { value = false, desc = "True to disable vehicles damages, false to enable." },
-    vehNoCollide = { value = false, desc = "True to disable collisions between vehicles and players"},
-    vehIncludeWAC = { value = true, desc = "Check for WAC vehicles."},
+    vehDamage = {
+      value = false,
+      desc = "True to disable vehicles damages, false to enable."
+    },
+    vehNoCollide = {
+      value = false,
+      desc = "True to disable collisions between vehicles and players"
+    },
+    vehIncludeWAC = {
+      value = true,
+      desc = "Check for WAC vehicles."
+    },
 
     --[[ Props related ]]--
-    blockPhysgunReload = { value = false, desc = "Block players from using physgun reload"},
-    blockContraptionMove = { value = false, desc = "Block players from moving contraptions" },
-    autoFreeze = { value = false, desc = "Freeze every unfrozen prop each X seconds" },
-    autoFreezeTime = { value = 120, desc = "Auto freeze timer (seconds)"},
+    blockPhysgunReload = {
+      value = false,
+      desc = "Block players from using physgun reload"
+    },
+    blockContraptionMove = {
+      value = false,
+      desc = "Block players from moving contraptions"
+    },
+    autoFreeze = {
+      value = false,
+      desc = "Freeze every unfrozen prop each X seconds"
+    },
+    autoFreezeTime = {
+      value = 120,
+      desc = "Auto freeze timer (seconds)"
+    },
 
-    thFadingDoors = { value = true, desc = "Inject custom hooks into Fading Doors" },
-    fadingDoorGhosting = { value = true, desc = "Activate fading door ghosting" },
-    dontGhostVehicles = { value = false, desc = "Toggle vehicle ghosting" },
-    sleepyPhys = { value = false, desc = "Activate FRZR9K (Sleepy Physics)" },
-    hookSP = { value = false, desc = "Hook FRZR9K into collision (Experimental)"},
-    allowPK = { value = false, desc = "Allow prop killing" }
+    thFadingDoors = {
+      value = true,
+      desc = "Inject custom hooks into Fading Doors"
+    },
+    fadingDoorGhosting = {
+      value = true,
+      desc = "Activate fading door ghosting"
+    },
+    dontGhostVehicles = {
+      value = false,
+      desc = "Toggle vehicle ghosting"
+    },
+    sleepyPhys = {
+      value = false,
+      desc = "Activate FRZR9K (Sleepy Physics)"
+    },
+    hookSP = {
+      value = false,
+      desc = "Hook FRZR9K into collision (Experimental)"
+    },
+    allowPK = {
+      value = false,
+      desc = "Allow prop killing"
+    }
 }
 
 --[[------------------------------------------
