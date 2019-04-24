@@ -275,7 +275,7 @@ function APG.blockPickup( ply )
 end
 
 function APG.userNotification(msg, targets, level, log) -- The most advanced notification function in the world.
-    if not APG.modules["notification"] then print("notifications disabled") return end
+    if not APG.modules["notification"] then return end
     -- local logged = false -- not used, was there a reason this is here?
     msg = string.Trim(tostring(msg))
     level = level or 0
