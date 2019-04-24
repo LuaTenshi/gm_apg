@@ -311,7 +311,7 @@ local function showNotice()
 
     notification.AddLegacy(msg, icon, 3+(level*3))
 
-    if canPlaySound:GetBool() then
+    if canPlaySound:GetBool() and APG.cfg["noticeSounds"].value then
         surface.PlaySound(level == 1 and "buttons/button10.wav" or level == 2 and "ambient/alarms/klaxon1.wav" or "buttons/lightswitch2.wav")
     end
 
@@ -384,7 +384,7 @@ properties.Add( "apgoptions", {
 
         addoption( "Remove this entity class from the Ghosting List", {
             icon = "icon16/tick.png",
-            callback = function() self:APGcmd(ent, "remghost") end, 
+            callback = function() self:APGcmd(ent, "remghost") end,
         })
     end,
     Action = function( self, ent ) end,
@@ -397,7 +397,7 @@ properties.Add( "apgoptions", {
                 chat.AddText(Color(0,255,0), "\n\""..id.."\" has been copied to your clipboard.\n")
             else
                chat.AddText(Color(255,0,0), "\nOops, that's not a Player!\n")
-            end 
+            end
         elseif IsValid(ent) and ent.EntIndex then
             net.Start("apg_context_c2s")
                 net.WriteString(cmd)

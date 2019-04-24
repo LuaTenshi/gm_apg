@@ -92,6 +92,8 @@ defaultSettings.cfg = {
     --[[----------
         MISC
     ]]------------
+    --[[ Notifications ]] --
+    noticeSounds = { value = false, desc = "When notifications run do you want the sounds to play?" },
     --[[ Vehicles ]]--
     vehDamage = { value = false, desc = "True to disable vehicles damages, false to enable." },
     vehNoCollide = { value = false, desc = "True to disable collisions between vehicles and players"},
@@ -145,7 +147,7 @@ if SERVER and file.Exists( "apg/settings.txt", "DATA" ) then
         print("[APG] Settings File Updated. (Conflicts Resolved)")
         print("[APG] The Following Settings Have Been Removed: ")
         for _,v in next, removedSetting do
-            print("\t> \""..tostring(v).."\" has been removed.")
+            print("\t> \"" .. tostring(v) .. "\" has been removed.")
         end
 
         removedSetting = nil
