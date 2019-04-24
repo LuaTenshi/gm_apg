@@ -88,7 +88,7 @@ end
 function APG.freezeIt( ent, extend )
     local obj = ent:GetPhysicsObject()
     if extend then
-        for _,v in next, constraint.GetAllConstrainedEntities(ent) do 
+        for _,v in next, constraint.GetAllConstrainedEntities(ent) do
             killvel(v:GetPhysicsObject(), true)
             v.APG_Frozen = true
         end
@@ -155,8 +155,8 @@ function APG.ghostThemAll( notify )
         APG.entGhost( v, false, true )
     end
     -- TODO : Fancy notification system
-    local msg = "Unfrozen props ghosted!" 
-    
+    local msg = "Unfrozen props ghosted!"
+
     APG.notify(msg, "all", 1)
 end
 
@@ -280,7 +280,7 @@ function APG.notify(msg, targets, level, log) -- The most advanced notify functi
 
     local msg = string.Trim(tostring(msg))
     local level = level or 0
-    
+
     if type(level) == "string" then
         level = string.lower(level)
         level = level == "notice" and 0 or level == "warning" and 1 or level == "alert" and 2
@@ -295,7 +295,7 @@ function APG.notify(msg, targets, level, log) -- The most advanced notify functi
             for _,v in next, player.GetHumans() do
                 if not IsValid(v) then continue end
                 if not (v:IsSuperAdmin()) then continue end
-                table.insert(new_targets,v) 
+                table.insert(new_targets,v)
             end
             targets = new_targets
         elseif targets == "2" or targets == "admins" then
@@ -303,7 +303,7 @@ function APG.notify(msg, targets, level, log) -- The most advanced notify functi
             for _,v in next, player.GetHumans() do
                 if not IsValid(v) then continue end
                 if not (v:IsAdmin() or v:IsSuperAdmin()) then continue end
-                table.insert(new_targets,v) 
+                table.insert(new_targets,v)
             end
             targets = new_targets
         elseif targets == "0" or targets == "all" or targets == "everyone" then
@@ -370,10 +370,10 @@ hook.Add("PhysgunPickup","APG_PhysgunPickup", function(ply, ent)
             count = count + 1
             if v.APG_Frozen then
                 noFrozen = false
-                break 
+                break
             end
         end
-        
+
         if noFrozen and ( count > 1 ) then
             timer.Simple(0, function()
                 APG.freezeIt(ent, true)
@@ -399,7 +399,7 @@ end)
 ]]----------------------
 hook.Add( "PhysgunDrop", "APG_physGunDrop", function( ply, ent )
     ent.APG_HeldBy = ent.APG_HeldBy or {}
-    
+
     if ent.APG_HeldBy.plys then
         ent.APG_HeldBy.plys[ply:SteamID()] = nil -- Remove the holder.
     end
@@ -408,7 +408,7 @@ hook.Add( "PhysgunDrop", "APG_physGunDrop", function( ply, ent )
 
     if #ent.APG_HeldBy > 0 then return end
     ent.APG_Picked = false
-    
+
     if APG.isBadEnt( ent ) and not APG.cfg["allowPK"].value then
         APG.killVelocity(ent,true,false,true) -- Extend to constrained props, and wake target.
     end
@@ -473,7 +473,7 @@ end
 
 function APG.startDJob( job, content )
     if not job or not isstring(job) or not content then return end
-    if not toProcess or not toProcess[job] then 
+    if not toProcess or not toProcess[job] then
         ErrorNoHalt("[APG] No Process Found, Attempting Reload!\n---\nThis Shouldn't Happen Concider Restarting!\n")
         APG.reload()
         return
@@ -492,7 +492,7 @@ function APG.startDJob( job, content )
     end)
 end
 
-hook.Add("PostGamemodeLoaded", "APG_Load", function()
+hook.Add("InitPostEntity", "APG_Load", function()
     timer.Simple(0, function() -- Make sure we load last!
         APG.reload()
     end)
