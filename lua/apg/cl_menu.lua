@@ -336,7 +336,11 @@ properties.Add( "apgoptions", {
 
     Filter = function( self, ent, ply ) -- A function that determines whether an entity is valid for this property
         if not ply:IsSuperAdmin() then return false end
-        return ent.GetClass and ent:GetClass() and IsValid(ent) and ent:EntIndex() > 0
+if not ent:GetClass() then return false end
+if not IsValid(ent) then return false end
+if not ent:EntIndex() > 0 then return false end
+
+return true
     end,
     MenuOpen = function( self, option, ent, tr )
         local submenu = option:AddSubMenu()
