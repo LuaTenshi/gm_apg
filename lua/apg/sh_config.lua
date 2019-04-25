@@ -119,7 +119,7 @@ defaultSettings.cfg = {
 
     --[[ Notifications ]] --
     notificationSounds = {
-      value = false,
+      value = false, -- Might make it where certain ones run sound
       desc = "When notifications run do you want the sounds to play?"
     },
     notificationLevel = {

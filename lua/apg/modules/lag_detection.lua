@@ -32,8 +32,8 @@ local mod = "lag_detection"
 ]]----------------------
 
 local lagFix = {
-    cleanup_all = function( notification ) APG.cleanUp( "all" ) end,
-    cleanup_unfrozen = function( notification ) APG.cleanUp( "unfrozen" ) end,
+    cleanup_all = function( ) APG.cleanUp( "all" ) end,
+    cleanup_unfrozen = function( ) APG.cleanUp( "unfrozen" ) end,
     ghost_unfrozen = APG.ghostThemAll,
     freeze_unfrozen = APG.freezeProps,
     smart_cleanup = APG.smartCleanup,
@@ -55,10 +55,10 @@ function APG.process( tab )
     return sum / (#tab) , max
 end
 
-hook.Remove("APG_lagDetected", "APG_RUN_lagDetected") -- Sometimes, I dream about cheese.
-hook.Add("APG_lagDetected", "APG_RUN_lagDetected", function()
+hook.Remove( "APG_lagDetected", "APG_RUN_lagDetected") -- Sometimes, I dream about cheese.
+hook.Add( "APG_lagDetected", "APG_RUN_lagDetected", function()
     if not APG then return end
-    local func = APG.cfg["lagFunc"].value
+    local func = APG.cfg[ "lagFunc" ].value
     if not lagFix[ func ] then return end
     lagFix[ func ]()
 end)
@@ -67,11 +67,11 @@ end)
         To replace in UI
 ]]----------------------
 concommand.Add( "APG_showLag", function(ply, cmd, arg)
-    if IsValid(ply) and not ply:IsAdmin() then return end
+    if IsValid( ply ) and not ply:IsAdmin() then return end
     local lastShow = SysTime()
     local values = {}
-    local time = arg[1] or 30
-    APG.log("[APG] Processing : please wait " .. time .. " seconds", ply )
+    local time = arg[ 1 ] or 30
+    APG.log( "[APG] Processing : please wait " .. time .. " seconds", ply )
     hook.Add("Think","APG_showLag",function()
         local curTime = SysTime()
         local diff = curTime - lastShow
@@ -79,10 +79,10 @@ concommand.Add( "APG_showLag", function(ply, cmd, arg)
         lastShow = curTime
     end)
     timer.Simple( time , function()
-        hook.Remove("Think","APG_showLag")
+        hook.Remove( "Think", "APG_showLag" )
         local avg, max = APG.process( values )
         values = {}
-        APG.log("[APG] Avg : " .. avg .. " | Max : " .. max, ply )
+        APG.log( "[APG] Avg : " .. avg .. " | Max : " .. max, ply )
     end)
 end)
 
@@ -105,17 +105,17 @@ function APG.resetLag()
     lastThink = SysTime()
 end
 
-APG.timerRegister(mod, "APG_process", 5, 0, function()
+APG.timerRegister( mod, "APG_process", 5, 0, function()
     if not APG.modules[ mod ] then return end
 
     if #tickTable < 12 or delta < trigValue then -- save every values the first minute
-        table.insert(tickTable, delta)
+        table.insert( tickTable, delta )
         if #tickTable > 60 then
             table.remove(tickTable, 1) -- it will take 300 seconds to fullfill the table.
         end
 
         curAvg = APG.process( tickTable )
-        trigValue = curAvg * ( 1 + APG.cfg["lagTrigger"].value / 100 )
+        trigValue = curAvg * ( 1 + APG.cfg[ "lagTrigger" ].value / 100 )
     end
 end)
 
@@ -126,13 +126,13 @@ APG.hookRegister( mod, "Think", "APG_detectLag", function()
     delta = curTime - lastThink
     if delta >= trigValue then
         lagCount = lagCount + 1
-        if (lagCount >= APG.cfg["lagsCount"].value) or ( delta > APG.cfg["bigLag"].value ) then
+        if (lagCount >= APG.cfg[ "lagsCount" ].value) or ( delta > APG.cfg[ "bigLag" ].value ) then
             lagCount = 0
             if not pause then
                 pause = true
                 timer.Simple( APG.cfg["lagFuncTime"].value, function() pause = false end)
-                
-                APG.userNotification("WARNING LAG DETECTED : Running lag fix function!", APG.cfg["notificationLevel"].value, 2)
+
+                APG.userNotification( "WARNING LAG DETECTED : Running lag fix function!", APG.cfg["notificationLevel"].value, 2 )
 
                 hook.Run( "APG_lagDetected" )
             end
@@ -147,10 +147,10 @@ end)
         Load hooks and timers
 ]]--------------------------------------------
 if APG.resetLag then APG.resetLag() end
-for k, v in next, APG[mod]["hooks"] do
+for k, v in next, APG[ mod ][ "hooks" ] do
     hook.Add( v.event, v.identifier, v.func )
 end
 
-for k, v in next, APG[mod]["timers"] do
+for k, v in next, APG[ mod ][ "timers" ] do
     timer.Create( v.identifier, v.delay, v.repetitions, v.func )
 end

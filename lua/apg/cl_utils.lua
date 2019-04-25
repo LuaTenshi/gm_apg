@@ -109,24 +109,24 @@ function utils.switch( panel, x, y, w, h, text, var )
         end
 end
 
-function utils.numSlider( panel, x, y, w, h, text, var, min, max, decimal )
+function utils.numSlider( panel, x, y, w, h, text, var, minSlider, maxSlider, decimal )
     local slider = vgui.Create( "DNumSlider", panel )
-        slider:SetPos( x, y )          -- Set the position
-        slider:SetSize( w, h )         -- Set the size
-        slider:SetText( "" )           -- Set the text above the slider
-        slider:SetMin( min )           -- Set the minimum number you can slide to
-        slider:SetMax( max )           -- Set the maximum number you can slide to
-        slider:SetDecimals( decimal )  -- Decimal places - zero for whole number
-        slider:SetValue( APG.cfg[var].value )
+        slider:SetPos( x, y )
+        slider:SetSize( w, h )
+        slider:SetText( "" )
+        slider:SetMin( minSlider )
+        slider:SetMax( maxSlider )
+        slider:SetDecimals( decimal )
+        slider:SetValue( APG.cfg[ var ].value )
         slider.OnValueChanged = function( self, newValue )
-            APG.cfg[var].value = newValue
+            APG.cfg[ var ].value = newValue
         end
         slider.Paint = function(slf, w, h)
-            draw.RoundedBox(0,0, h * 0.97, w - 5,1, Color(250, 250, 250,1))
-            draw.DrawText( text, "APG_element2_font",0, 0, Color( 189, 189, 189), 3 )
+            draw.RoundedBox( 0, 0, h * 0.97, w - 5, 1, Color(250, 250, 250, 1 ) )
+            draw.DrawText( text, "APG_element2_font", 0, 0, Color( 189, 189, 189), 3 )
         end
         slider.Slider.Paint = function( slf, w, h)
-            draw.RoundedBox(0,8, 9 - 1, w - 16, 1 + 2, Color(250, 250, 250,1))
+            draw.RoundedBox( 0, 8, 9 - 1, w - 16, 1 + 2, Color( 250, 250, 250, 1))
         end
         slider.Slider.Knob.Paint = function(slf, w, h)
             draw.RoundedBox(6,0,4,10,10,Color( 11,70,30, 255))
