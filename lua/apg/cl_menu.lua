@@ -337,7 +337,7 @@ properties.Add( "apgoptions", {
         if not ply:IsSuperAdmin() then return false end
         if not IsValid(ent) then return false end
         if not ent:GetClass() then return false end
-        if not ent:EntIndex() then return false end
+        if not (ent:EntIndex() > 0) then return false end
 
         return true
     end,
