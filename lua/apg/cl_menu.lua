@@ -13,7 +13,7 @@ APG_panels = APG_panels or {}
 local utils = include( "cl_utils.lua" ) or { }
 
 local function APGBuildStackPanel()
-    local panel = APG_panels["stack_detection"]
+    local panel = APG_panels[ "stack_detection" ]
     panel.Paint = function( i, w, h ) end
 
     utils.numSlider( panel, 0, 40, 500, 20, "Maximum stacked ents", "stackMax", 3, 50, 0 )
@@ -21,7 +21,7 @@ local function APGBuildStackPanel()
 end
 
 local function APGBuildMiscPanel()
-    local panel = APG_panels["misc"]
+    local panel = APG_panels[ "misc" ]
     panel.Paint = function( i, w, h ) end
 
     utils.switch( panel, 0, 40, 395, 20, "Auto freeze over time", "autoFreeze" )
@@ -33,7 +33,7 @@ local function APGBuildMiscPanel()
 end
 
 local function APGBuildLagPanel()
-    local panel = APG_panels["lag_detection"]
+    local panel = APG_panels[ "lag_detection" ]
     panel.Paint = function( i, w, h ) end
 
     utils.numSlider( panel, 0, 40, 500, 20, "Lag threshold (%)", "lagTrigger", 5, 1000, 0 )
@@ -41,11 +41,10 @@ local function APGBuildLagPanel()
     utils.numSlider( panel, 0, 110, 500, 20, "Heavy lag trigger (seconds)", "bigLag", 1, 5, 1 )
     utils.comboBox( panel, 0, 145, 500, 20, "Lag fix function", "lagFunc", APG_lagFuncs )
     utils.numSlider( panel, 0, 180, 500, 20, "Lag func. delay (seconds)", "lagFuncTime", 1, 300, 0 )
-    utils.numSlider( panel, 0, 215, 500, 20, "Notification mode ", "notificationLevel", 0, 2, 0 )
 end
 
 local function APGBuildNotificationPanel()
-    local panel = APG_panels["notification"]
+    local panel = APG_panels[ "notification" ]
     panel.Paint = function( i, w, h ) end
 
     utils.switch( panel, 0, 40, 395, 20, "Notification Sounds", "notificationSounds" )
@@ -54,7 +53,7 @@ local function APGBuildNotificationPanel()
 end
 
 local function APGBuildToolHackPanel()
-    local panel = APG_panels["misc2"]
+    local panel = APG_panels[ "misc2" ]
     panel.Paint = function( i, w, h ) end
 
     utils.switch( panel, 0, 40, 395, 20, "Inject custom hooks into Fading Doors", "thFadingDoors" )
@@ -64,7 +63,7 @@ local function APGBuildToolHackPanel()
 end
 
 local function APGBuildGhostPanel()
-    local panel = APG_panels["ghosting"]
+    local panel = APG_panels[ "ghosting" ]
     panel.Paint = function( i, w, h)
         draw.RoundedBox( 0, 0, 37, 170, 135, Color( 38, 38, 38, 255 ) )
         draw.DrawText( "Ghosting color:", "APG_element_font", 5, 37, Color( 189, 189, 189 ), 3 )
@@ -81,7 +80,7 @@ local function APGBuildGhostPanel()
     Mixer:SetPos( 5, 55 )
     Mixer:SetSize( 160, 110 )
     Mixer.Mixer.ValueChanged = function( self, color )
-        APG.cfg["ghost_color"].value = Color( color.r, color.g, color.b, color.a)
+        APG.cfg[ "ghost_color" ].value = Color( color.r, color.g, color.b, color.a)
     end
 
     local dList = vgui.Create( "DListView", panel )
@@ -97,34 +96,34 @@ local function APGBuildGhostPanel()
         local key = line:GetColumnText(1)
         local value = not tobool(line:GetColumnText(2))
         line:SetColumnText( 2, value )
-        APG.cfg["bad_ents"].value[key] = value
+        APG.cfg[ "bad_ents" ].value[key] = value
     end
 
     local function updateTab()
         dList:Clear()
-        for class,complete in pairs(APG.cfg["bad_ents"].value) do
+        for class,complete in pairs(APG.cfg[ "bad_ents" ].value) do
             dList:AddLine(class, complete)
         end
     end
     updateTab()
 
     dList.Paint = function(i,w,h)
-        draw.RoundedBox(0,0,0,w,h,Color(150, 150, 150, 255))
+        draw.RoundedBox( 0, 0, 0, w, h, Color( 150, 150, 150, 255 ) )
     end
     dList.VBar.Paint = function(i,w,h)
-        surface.SetDrawColor(88, 110, 110, 240)
-        surface.DrawRect(0,0,w,h)
+        surface.SetDrawColor( 88, 110, 110, 240 )
+        surface.DrawRect( 0, 0, w, h )
     end
     dList.VBar.btnGrip.Paint = function(i,w,h)
-        surface.SetDrawColor(255, 83, 13,50)
-        surface.DrawRect(0,0,w,h)
-        draw.RoundedBox( 0, 1,1,w-2,h-2, Color( 72, 89, 89, 255 ) )
+        surface.SetDrawColor( 255, 83, 13, 50 )
+        surface.DrawRect( 0, 0, w, h )
+        draw.RoundedBox( 0, 1, 1, w - 2, h - 2, Color( 72, 89, 89, 255 ) )
     end
     dList.VBar.btnUp.Paint = function(i,w,h)
-        draw.RoundedBox( 0, 0,0,w,h, Color( 72, 89, 89, 240 ) )
+        draw.RoundedBox( 0, 0, 0, w, h, Color( 72, 89, 89, 240 ) )
     end
     dList.VBar.btnDown.Paint = function(i,w,h)
-        draw.RoundedBox( 0, 0,0,w,h, Color( 72, 89, 89, 240 ) )
+        draw.RoundedBox( 0, 0, 0, w, h, Color( 72, 89, 89, 240 ) )
     end
 
     local TextEntry = vgui.Create( "DTextEntry", panel )
@@ -158,7 +157,7 @@ local function APGBuildGhostPanel()
     Remove.DoClick = function()
         for k,v in pairs(dList:GetSelected()) do
             local key = v:GetValue(1)
-            APG.cfg["bad_ents"].value[key] = nil
+            APG.cfg[ "bad_ents" ].value[key] = nil
             updateTab()
         end
     end
@@ -336,11 +335,11 @@ properties.Add( "apgoptions", {
 
     Filter = function( self, ent, ply ) -- A function that determines whether an entity is valid for this property
         if not ply:IsSuperAdmin() then return false end
-if not ent:GetClass() then return false end
-if not IsValid(ent) then return false end
-if not ent:EntIndex() > 0 then return false end
+        if not IsValid(ent) then return false end
+        if not ent:GetClass() then return false end
+        if not ent:EntIndex() then return false end
 
-return true
+        return true
     end,
     MenuOpen = function( self, option, ent, tr )
         local submenu = option:AddSubMenu()
