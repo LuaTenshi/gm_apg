@@ -36,7 +36,7 @@ local function APGBuildLagPanel()
     local panel = APG_panels[ "lag_detection" ]
     panel.Paint = function( i, w, h ) end
 
-    utils.numSlider( panel, 0, 40, 500, 20, "Lag threshold (%)", "lagTrigger", 5, 1000, 0 )
+    utils.numSlider( panel, 0, 40, 500, 20, "Lag threshold (%)", "lagTrigger", 5, 200, 0 )
     utils.numSlider( panel, 0, 75, 500, 20, "Frames lost", "lagsCount", 1, 20, 0 )
     utils.numSlider( panel, 0, 110, 500, 20, "Heavy lag trigger (seconds)", "bigLag", 1, 5, 1 )
     utils.comboBox( panel, 0, 145, 500, 20, "Lag fix function", "lagFunc", APG_lagFuncs )
