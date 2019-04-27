@@ -12,6 +12,26 @@ APG_panels = APG_panels or {}
 
 local utils = include( "cl_utils.lua" ) or { }
 
+local function showNotice(notificationLevel, notificationMessage)
+
+    if string.Trim(notificationMessage) == "" then return end
+    icon = notificationLevel == 0 and NOTIFY_GENERIC or notificationLevel == 1 and NOTIFY_CLEANUP or notificationLevel == 2 and NOTIFY_ERROR
+
+    notification.AddLegacy(notificationMessage, icon, 3 + (notificationLevel * 3))
+
+    if APG.cfg[ "notificationSounds" ].value then
+        surface.PlaySound(notificationLevel == 1 and "buttons/button10.wav" or notificationLevel == 2 and "ambient/alarms/klaxon1.wav" or "buttons/lightswitch2.wav") -- Maybe let the player choose the sound?
+    end
+
+    MsgC( notificationLevel == 0 and Color( 0, 255, 0 ) or Color( 255, 191, 0 ), "[APG] ", Color( 255, 255, 255 ), notificationMessage,"\n")
+end
+
+net.Receive( "apg_notice_s2c", function()
+  local notificationLevel = net.ReadUInt( 3 )
+  local notificationMessage = net.ReadString()
+  showNotice(notificationLevel, notificationMessage)
+end)
+
 local function APGBuildStackPanel()
     local panel = APG_panels[ "stack_detection" ]
     panel.Paint = function( i, w, h ) end
@@ -48,7 +68,7 @@ local function APGBuildNotificationPanel()
     panel.Paint = function( i, w, h ) end
 
     utils.switch( panel, 0, 40, 395, 20, "Notification Sounds", "notificationSounds" )
-    utils.numSlider( panel, 0, 75, 500, 20, "Notification Level", "notificationLevel", 1, 2, 0 )
+    utils.numSlider( panel, 0, 75, 500, 20, "Notification Level", "notificationLevel", 1, 3, 0 )
     utils.switch( panel, 0, 110, 395, 20, "Do you want to show which lag function ran?", "notificationLagFunc" )
 end
 
@@ -192,8 +212,7 @@ local function openMenu( len )
         APG_Main.Paint = function( i, w, h )
             draw.RoundedBox( 4, 0, 0, w, h, Color( 34, 34, 34, 255 ) )
             draw.RoundedBox( 0, 0, 23, w, 1, main_color)
-            local name = "A.P.G. - Anti Prop Griefing Solution"
-            draw.DrawText( name, "APG_title_font", 8, 5, Color( 189, 189, 189), 3 )
+            draw.DrawText( "A.P.G. - Anti Prop Griefing Solution", "APG_title_font", 8, 5, Color( 189, 189, 189), 3 )
         end
     local closeButton = vgui.Create( "DButton",APG_Main )
         closeButton:SetPos( APG_Main:GetWide() - 20, 4 )
@@ -218,7 +237,8 @@ local function openMenu( len )
             net.WriteUInt( settings:len(), 32 ) -- Write the length of the data (up to {{ user_id | 76561197972967270 }})
             net.WriteData( settings, settings:len() ) -- Write the data
         net.SendToServer()
-        APG_Main:Remove()
+        showNotice(1, "APG Settings saved!")
+
     end
     saveButton.Paint = function( i, w, h )
         draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 3) )
@@ -307,26 +327,6 @@ local function openMenu( len )
 end
 
 net.Receive( "apg_menu_s2c", openMenu )
-
-local canPlaySound = CreateClientConVar("cl_apgalert", "1", true)
-
-local function showNotice()
-    local level = tonumber( net.ReadUInt( 3 ) )
-    local msg = tostring( net.ReadString( ) )
-
-    if string.Trim(msg) == "" then return end
-    icon = level == 0 and NOTIFY_GENERIC or level == 1 and NOTIFY_CLEANUP or level == 2 and NOTIFY_ERROR
-
-    notification.AddLegacy(msg, icon, 3 + (level * 3))
-
-    if canPlaySound:GetBool() and APG.cfg[ "notificationSounds" ].value then
-        surface.PlaySound(level == 1 and "buttons/button10.wav" or level == 2 and "ambient/alarms/klaxon1.wav" or "buttons/lightswitch2.wav") -- Maybe let the player choose the sound?
-    end
-
-    MsgC( level == 0 and Color( 0, 255, 0 ) or Color( 255, 191, 0 ), "[APG] ", Color( 255, 255, 255 ), msg,"\n")
-end
-
-net.Receive( "apg_notice_s2c", showNotice )
 
 properties.Add( "apgoptions", {
     MenuLabel = "APG Options", -- Name to display on the context menu
