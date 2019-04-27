@@ -32,7 +32,16 @@ local ENT = FindMetaTable( "Entity" )
 APG._SetColGroup = APG._SetColGroup or ENT.SetCollisionGroup
 function ENT:SetCollisionGroup( group )
 
-	if APG.isBadEnt( self ) and APG.getOwner( self ) and group == COLLISION_GROUP_NONE and not self.APG_Frozen  then
+local isBadEnt = APG.isBadEnt( self )
+local isValidOwner = APG.getOwner( self )
+local groupIsNone = group == COLLISION_GROUP_NAME
+local isNotFrozen = not self.APG_Frozen
+
+local shouldMakeInteractable= isBadEnt and hasValidOwner and groupIsNone and isNotFrozen
+
+if shouldMakeInteractable then
+    group = COLLISION_GROUP_INTERACTIVE
+end
 				group = COLLISION_GROUP_INTERACTIVE
 	end
 	return APG._SetColGroup( self, group )
