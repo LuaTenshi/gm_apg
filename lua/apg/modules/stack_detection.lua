@@ -36,7 +36,7 @@ function APG.checkStack( ent, pcount )
         ent:Remove()
         if not owner.APG_CantPickup then
             APG.blockPickup( owner )
-            APG.userNotification("Do you think this is 2013 gmod?", owner, 1)
+            APG.userNotification("Do not try to crash the server!", owner, 1)
 
             local msg = owner:Nick() .. " [" .. owner:SteamID() .. "]" .. " tried to unfreeze a stack of props!"
             APG.userNotification(msg, APG.cfg["notificationLevel"].value, 2)
