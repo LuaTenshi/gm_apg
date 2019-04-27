@@ -26,7 +26,7 @@ function APG.userNotification(msg, targets, notificationLevel, log) -- The most 
 
     if IsEntity(targets) and IsValid(targets) and targets:IsPlayer() then
         targets = { targets }
-
+    
     elseif type(targets) ~= "table" then -- Convert to a table.
         targets = string.lower(tostring(targets))
 
@@ -41,7 +41,7 @@ function APG.userNotification(msg, targets, notificationLevel, log) -- The most 
                 table.insert(new_targets, ply)
             end
             targets = new_targets
-
+      
         elseif targets == "2" or targets == "staff" then
             local new_targets = {}
             for _, ply in next, player.GetHumans() do
