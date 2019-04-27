@@ -31,6 +31,7 @@ local mod = "ghosting"
 local ENT = FindMetaTable( "Entity" )
 APG._SetColGroup = APG._SetColGroup or ENT.SetCollisionGroup
 function ENT:SetCollisionGroup( group )
+  local group = group
   local isBadEnt = APG.isBadEnt( self )
   local hasValidOwner = APG.getOwner( self )
   local groupIsNone = group == COLLISION_GROUP_NAME
@@ -38,16 +39,16 @@ function ENT:SetCollisionGroup( group )
 
   local shouldMakeInteractable = isBadEnt and hasValidOwner and groupIsNone and isNotFrozen
   if shouldMakeInteractable then
-    roup = COLLISION_GROUP_INTERACTIVE
+    group = COLLISION_GROUP_INTERACTIVE
   end
 
-	return APG._SetColGroup( self, group )
+  return APG._SetColGroup( self, group )
 end
 
 local PhysObj = FindMetaTable( "PhysObj" )
 APG._EnableMotion = APG._EnableMotion or PhysObj.EnableMotion
 function PhysObj:EnableMotion( bool )
-	local sent = self:GetEntity()
+  local sent = self:GetEntity()
 	if APG.isBadEnt( sent ) and APG.getOwner( sent ) then
 		sent.APG_Frozen = not bool
 		if not sent.APG_Frozen then
@@ -286,8 +287,8 @@ end)
 
 local BlockedProperties = { "collision", "persist", "editentity", "drive", "ignite", "statue" }
 APG.hookRegister( mod, "CanProperty", "APG_canProperty", function(ply, prop, ent)
-	prop = tostring( prop )
-	if ( table.HasValue(BlockedProperties,prop) and ent.APG_Ghosted ) then
+	local prop = tostring( prop )
+	if ( table.HasValue(BlockedProperties, prop) and ent.APG_Ghosted ) then
 		APG.log( "Cannot set " .. prop .. " properties on ghosted entities!", ply)
 		return false
 	end
