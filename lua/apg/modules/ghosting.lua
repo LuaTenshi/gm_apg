@@ -31,19 +31,16 @@ local mod = "ghosting"
 local ENT = FindMetaTable( "Entity" )
 APG._SetColGroup = APG._SetColGroup or ENT.SetCollisionGroup
 function ENT:SetCollisionGroup( group )
+  local isBadEnt = APG.isBadEnt( self )
+  local hasValidOwner = APG.getOwner( self )
+  local groupIsNone = group == COLLISION_GROUP_NAME
+  local isNotFrozen = not self.APG_Frozen
 
-local isBadEnt = APG.isBadEnt( self )
-local isValidOwner = APG.getOwner( self )
-local groupIsNone = group == COLLISION_GROUP_NAME
-local isNotFrozen = not self.APG_Frozen
+  local shouldMakeInteractable = isBadEnt and hasValidOwner and groupIsNone and isNotFrozen
+  if shouldMakeInteractable then
+    roup = COLLISION_GROUP_INTERACTIVE
+  end
 
-local shouldMakeInteractable= isBadEnt and hasValidOwner and groupIsNone and isNotFrozen
-
-if shouldMakeInteractable then
-    group = COLLISION_GROUP_INTERACTIVE
-end
-				group = COLLISION_GROUP_INTERACTIVE
-	end
 	return APG._SetColGroup( self, group )
 end
 
