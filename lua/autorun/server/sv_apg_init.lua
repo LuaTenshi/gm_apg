@@ -34,6 +34,7 @@ function APG.load( module )
     APG.unLoad( module )
     APG.modules[ module ] = true
     include( "apg/modules/" .. module .. ".lua" )
+    print("[APG] " .. module .. " loaded.")
 end
 
 function APG.unLoad( module )
@@ -50,6 +51,9 @@ function APG.unLoad( module )
     for k, v in next, timers do
         timer.Remove(v.identifier)
     end
+
+    print("[APG] " .. module .. " unloaded.")
+
 end
 
 function APG.reload( )

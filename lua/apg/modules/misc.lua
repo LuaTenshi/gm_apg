@@ -11,7 +11,7 @@
         MISCELLANEOUS MODULE
     ============================
 
-    Developper informations :
+    Developer informations :
     ---------------------------------
     Used variables :
         vehDamage = { value = true, desc = "True to enable vehicles damages, false to disable." }
@@ -25,9 +25,9 @@ local mod = "misc"
 --[[--------------------
     Vehicle damage
 ]]----------------------
-local function isVehDamage(dmg,atk,ent)
-    if not IsValid(ent) then return false end
-    if dmg:GetDamageType() == DMG_VEHICLE or APG.IsVehicle(atk) or APG.IsVehicle(ent) then
+local function isVehDamage( dmg, atk, ent )
+    if not IsValid( ent ) then return false end
+    if dmg:GetDamageType() == DMG_VEHICLE or APG.IsVehicle( atk ) or APG.IsVehicle( ent ) then
         return true
     end
     return false
@@ -36,9 +36,9 @@ end
 --[[--------------------
     No Collide vehicles on spawn
 ]]----------------------
-APG.hookRegister(mod,"OnEntityCreated","APG_noCollideVeh",function(ent)
+APG.hookRegister( mod,"OnEntityCreated", "APG_noCollideVeh", function( ent )
     timer.Simple(0.03, function()
-        if APG.cfg["vehNoCollide"].value and APG.IsVehicle(ent) then
+        if APG.cfg[ "vehNoCollide" ].value and APG.IsVehicle( ent ) then
             ent:SetCollisionGroup( COLLISION_GROUP_WEAPON )
         end
     end)
@@ -47,12 +47,13 @@ end)
 --[[--------------------
     Disable prop damage
 ]]----------------------
-APG.hookRegister(mod, "EntityTakeDamage","APG_noPropDmg",function(target, dmg)
-    local atk, ent = dmg:GetAttacker(), dmg:GetInflictor()
-    if not APG.cfg["allowPK"].value then
-        if APG.isBadEnt( ent ) or dmg:GetDamageType() == DMG_CRUSH or (APG.cfg["vehDamage"].value and isVehDamage(dmg,atk,ent)) then
+APG.hookRegister( mod, "EntityTakeDamage","APG_noPropDmg", function( target, dmg )
+    if ( not APG.cfg[ "allowPK" ].value ) then -- Check if prop kill is allowed, before checking anything else.
+        local atk, ent = dmg:GetAttacker(), dmg:GetInflictor()
+        if APG.isBadEnt( ent ) or dmg:GetDamageType() == DMG_CRUSH or ( APG.cfg[ "vehDamage" ].value and isVehDamage( dmg, atk, ent ) ) then
             dmg:SetDamage(0)
-            return true -- Returning true overrides and blocks all related damage, it also prevents the hook from running any further preventing unintentional damage from other addons.
+            return true 
+            -- ^ Returning true overrides and blocks all related damage, it also prevents the hook from running any further preventing unintentional damage from other addons.
         end
     end
 end)
@@ -60,9 +61,9 @@ end)
 --[[--------------------
     Block Physgun Reload
 ]]----------------------
-APG.hookRegister(mod, "OnPhysgunReload", "APG_blockPhysgunReload", function(_, ply) 
-    if APG.cfg["blockPhysgunReload"].value then
-        -- APG.notify("Physgun Reloading is Currently Disabled", ply, 1)
+APG.hookRegister( mod, "OnPhysgunReload", "APG_blockPhysgunReload", function( _, ply )
+    if APG.cfg[ "blockPhysgunReload" ].value then
+        --APG.userNotification("Physgun Reloading is Currently Disabled", ply, 1)
         return false
     end
 end)
@@ -70,9 +71,9 @@ end)
 --[[--------------------
     Auto prop freeze
 ]]----------------------
-APG.timerRegister( mod, "APG_autoFreeze", APG.cfg["autoFreezeTime"].value, 0, function()
-    if APG.cfg["autoFreeze"].value then
-        APG.freezeProps( false )
+APG.timerRegister( mod, "APG_autoFreeze", APG.cfg[ "autoFreezeTime" ].value, 0, function()
+    if APG.cfg[ "autoFreeze" ].value then
+        APG.freezeProps()
     end
 end)
 
