@@ -29,18 +29,17 @@ local mod = "ghosting"
 		Override base functions
 ]]--------------------------------------------
 local ENT = FindMetaTable( "Entity" )
-APG.oSetColGroup = APG.oSetColGroup or ENT.SetCollisionGroup
+APG._SetColGroup = APG._SetColGroup or ENT.SetCollisionGroup
 function ENT:SetCollisionGroup( group )
+
 	if APG.isBadEnt( self ) and APG.getOwner( self ) and group == COLLISION_GROUP_NONE and not self.APG_Frozen  then
 				group = COLLISION_GROUP_INTERACTIVE
---[[        elseif group == COLLISION_GROUP_INTERACTIVE and APG.isTrap( self ) then
-			group = COLLISION_GROUP_DEBRIS_TRIGGER --]]
 	end
-	return APG.oSetColGroup( self, group )
+	return APG._SetColGroup( self, group )
 end
 
 local PhysObj = FindMetaTable( "PhysObj" )
-APG.oEnableMotion = APG.oEnableMotion or PhysObj.EnableMotion
+APG._EnableMotion = APG._EnableMotion or PhysObj.EnableMotion
 function PhysObj:EnableMotion( bool )
 	local sent = self:GetEntity()
 	if APG.isBadEnt( sent ) and APG.getOwner( sent ) then
@@ -49,7 +48,7 @@ function PhysObj:EnableMotion( bool )
 			sent:SetCollisionGroup( COLLISION_GROUP_INTERACTIVE )
 		end
 	end
-	return APG.oEnableMotion( self, bool )
+	return APG._EnableMotion( self, bool )
 end
 
 function APG.isTrap( ent, fullscan )
@@ -102,12 +101,12 @@ function APG.entGhost( ent, enforce, noCollide )
 		DropEntityIfHeld( ent )
 		ent:ForcePlayerDrop()
 
-		ent.APG_oColGroup = ent:GetCollisionGroup()
+		ent.APG_oldCollisionGroup = ent:GetCollisionGroup()
 
 		if not enforce then
 			-- If and old collision group was set get it.
-			if ent.OldCollisionGroup then ent.APG_oColGroup = ent.OldCollisionGroup end -- For FPP
-			if ent.DPP_oldCollision then ent.APG_oColGroup = ent.DPP_oldCollision end -- For DPP
+			if ent.OldCollisionGroup then ent.APG_oldCollisionGroup = ent.OldCollisionGroup end -- For FPP
+			if ent.DPP_oldCollision then ent.APG_oldCollisionGroup = ent.DPP_oldCollision end -- For DPP
 
 			ent.OldCollisionGroup = nil
 			ent.DPP_oldCollision = nil
@@ -163,8 +162,8 @@ function APG.entUnGhost( ent, ply, failmsg )
 
 			local newColGroup = COLLISION_GROUP_INTERACTIVE
 
-			if ent.APG_oColGroup == COLLISION_GROUP_WORLD then
-				newColGroup = ent.APG_oColGroup
+			if ent.APG_oldCollisionGroup == COLLISION_GROUP_WORLD then
+				newColGroup = ent.APG_oldCollisionGroup
 			elseif ent.APG_Frozen then
 				newColGroup = COLLISION_GROUP_NONE
 			end
@@ -312,7 +311,6 @@ APG.hookRegister(mod, "APG.FadingDoorToggle", "APG_FadingDoor", function(ent, is
           end
           timer.Simple(1, function()
 						if IsValid(ply) and IsValid(ent) then
-							--istrap = APG.isTrap(ent) -- is this needed?
 							ent.APG_Ghosted = false
 
 							ent:oldFadeDeactivate()
