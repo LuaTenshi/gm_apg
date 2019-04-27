@@ -34,7 +34,7 @@ function APG.isBadEnt( ent )
     if ent.jailWall == true then return false end -- Ignore ULX jails.
     if Entity(0) == ent or ent:IsWorld() then return false end -- Ignore worldspawn.
     if ent:IsWeapon() then return false end -- Ignore weapons.
-    if ent:GetClass() == "player" then return false end -- Ignore players.
+    if ent:IsPlayer() then return false end -- Ignore players.
 
     local h = hook.Run("APGisBadEnt", ent)
     if isbool(h) then return h end
@@ -272,61 +272,6 @@ function APG.blockPickup( ply )
             ply.APG_CantPickup = false
         end
     end)
-end
-
-function APG.userNotification(msg, targets, level, log) -- The most advanced notification function in the world.
-    if not APG.modules["notification"] then return end
-    -- local logged = false -- not used, was there a reason this is here?
-    msg = string.Trim(tostring(msg))
-    level = level or 0
-
-    if type(level) == "string" then
-        level = string.lower(level)
-        level = level == "notice" and 0 or level == "warning" and 1 or level == "alert" and 2
-    end
-
-    if isentity(targets) and IsValid(targets) and targets:GetClass() == "player" then
-        targets = {targets}
-    elseif type(targets) ~= "table" then -- Convert to a table.
-        targets = string.lower(tostring(targets))
-        if targets == "1" or targets == "superadmins" then
-            local new_targets = {}
-            for _,v in next, player.GetHumans() do
-                if not IsValid(v) then continue end
-                if not (v:IsSuperAdmin()) then continue end
-                table.insert(new_targets,v)
-            end
-            targets = new_targets
-        elseif targets == "2" or targets == "admins" then
-            local new_targets = {}
-            for _,v in next, player.GetHumans() do
-                if not IsValid(v) then continue end
-                if not (v:IsAdmin() or v:IsSuperAdmin()) then continue end
-                table.insert(new_targets,v)
-            end
-            targets = new_targets
-        elseif targets == "0" or targets == "all" or targets == "everyone" then
-            targets = player.GetHumans()
-        end
-    end
-
-    msg = (string.Trim(msg or "") ~= "") and msg or nil
-
-    if msg and (log or level >= 2) then
-        ServerLog("[APG] ", msg .. "\n")
-    end
-
-    if type(targets) ~= "table" then return false end
-
-    for _,v in next, targets do
-        if not IsValid(v) then continue end
-        net.Start("apg_notice_s2c")
-            net.WriteUInt(level, 3)
-            net.WriteString(msg)
-        net.Send(v)
-    end
-
-    return true
 end
 
 

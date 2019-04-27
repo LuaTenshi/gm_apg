@@ -124,7 +124,7 @@ defaultSettings.cfg = {
     },
     notificationLevel = {
       value = 2,
-      desc = "notification : 0 - Disabled, 1 - Everyone, 2 - Staff only (set in notificationRanks)"
+      desc = "notification : 0 - Disabled, 1 - Everyone, 2 - Staff only (set in notificationRanks), 3 - Superadmins"
     },
     notificationLagFunc = {
       value = false,
@@ -135,7 +135,7 @@ defaultSettings.cfg = {
       desc = "Do you want to use inheritance for notificatioRanks? (only works with ULIB/ULX)"
     },
     notificationRanks = {
-      value = {"trialmoduser", "premium_trialmoduser", "supremium_trialmoduser", "extremium_trialmoduser"},
+      value = { "trialmod", "moderator", "admin", "superadmin", "owner" },
       desc = "The ranks that you want to see the notification"
     },
 
