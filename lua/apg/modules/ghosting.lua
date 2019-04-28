@@ -38,7 +38,7 @@ function ENT:SetCollisionGroup( group )
 
 	local isBadEnt = APG.isBadEnt( self )
 	local hasValidOwner = APG.getOwner( self )
-	local groupIsNone = group == COLLISION_GROUP_NAME
+	local groupIsNone = group == COLLISION_GROUP_NONE
 	local isNotFrozen = not self.APG_Frozen
 
 	local shouldMakeInteractable = isBadEnt and hasValidOwner and groupIsNone and isNotFrozen
