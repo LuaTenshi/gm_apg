@@ -301,9 +301,9 @@ end)
 
 -- Custom Hooks --
 local function checkDoor(ply, ent)
-	local istrap = APG.isTrap(ent, true)
+	local isTrap = APG.isTrap(ent, true)
 
-	if istrap and istable(istrap) then
+	if isTrap and istable(isTrap) then
 		ent.APG_Ghosted = true
 		ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
 
@@ -323,7 +323,7 @@ local function checkDoor(ply, ent)
 				ent:oldFadeDeactivate()
 				ent:SetCollisionGroup( COLLISION_GROUP_INTERACTIVE )
 
-				if IsValid(istrap) then
+				if IsValid(isTrap) then
 					APG.userNotification( "Unable to unstuck objects from fading door!", ply, 1 )
 					APG.entGhost(ent)
 				end
