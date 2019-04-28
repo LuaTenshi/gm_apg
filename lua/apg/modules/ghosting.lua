@@ -24,31 +24,36 @@
 		alwaysFrozen = { value = false, desc = "Set to true to auto freeze props on physgun drop" }
 
 ]]--------------------------------------------
+
 local mod = "ghosting"
+
 --[[------------------------------------------
 		Override base functions
 ]]--------------------------------------------
 local ENT = FindMetaTable( "Entity" )
 APG._SetColGroup = APG._SetColGroup or ENT.SetCollisionGroup
+
 function ENT:SetCollisionGroup( group )
-  local group = group
-  local isBadEnt = APG.isBadEnt( self )
-  local hasValidOwner = APG.getOwner( self )
-  local groupIsNone = group == COLLISION_GROUP_NAME
-  local isNotFrozen = not self.APG_Frozen
+	local group = group
 
-  local shouldMakeInteractable = isBadEnt and hasValidOwner and groupIsNone and isNotFrozen
-  if shouldMakeInteractable then
-    group = COLLISION_GROUP_INTERACTIVE
-  end
+	local isBadEnt = APG.isBadEnt( self )
+	local hasValidOwner = APG.getOwner( self )
+	local groupIsNone = group == COLLISION_GROUP_NAME
+	local isNotFrozen = not self.APG_Frozen
 
-  return APG._SetColGroup( self, group )
+	local shouldMakeInteractable = isBadEnt and hasValidOwner and groupIsNone and isNotFrozen
+
+	if shouldMakeInteractable then
+		group = COLLISION_GROUP_INTERACTIVE
+	end
+
+	return APG._SetColGroup( self, group )
 end
 
 local PhysObj = FindMetaTable( "PhysObj" )
 APG._EnableMotion = APG._EnableMotion or PhysObj.EnableMotion
 function PhysObj:EnableMotion( bool )
-  local sent = self:GetEntity()
+	local sent = self:GetEntity()
 	if APG.isBadEnt( sent ) and APG.getOwner( sent ) then
 		sent.APG_Frozen = not bool
 		if not sent.APG_Frozen then
@@ -295,41 +300,45 @@ APG.hookRegister( mod, "CanProperty", "APG_canProperty", function(ply, prop, ent
 end)
 
 -- Custom Hooks --
+local function checkdoor(ply, ent)
+	local istrap = APG.isTrap(ent, true)
+
+	if istrap and istable(istrap) then
+		ent.APG_Ghosted = true
+		ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
+
+		for _,v in next, istrap do
+			if v:IsPlayer() then
+				local push = v:GetForward()
+				push = push * 1200
+				push.z = 60
+
+				v:SetVelocity(push)
+			end
+		end
+		
+		timer.Simple(1, function()
+			if IsValid(ply) and IsValid(ent) then
+				ent.APG_Ghosted = false
+				ent:oldFadeDeactivate()
+				ent:SetCollisionGroup( COLLISION_GROUP_INTERACTIVE )
+
+				if IsValid(istrap) then
+					APG.userNotification( "Unable to unstuck objects from fading door!", ply, 1 )
+					APG.entGhost(ent)
+				end
+			end
+		end)
+	end
+end
 
 APG.hookRegister(mod, "APG.FadingDoorToggle", "APG_FadingDoor", function(ent, isFading)
 	if APG.isBadEnt(ent) and APG.cfg["fadingDoorGhosting"].value then
 		local ply = APG.getOwner( ent )
 
 		if (IsValid(ply) and not isFading) then
-      timer.Simple(0.001, function()
-        local istrap = APG.isTrap( ent, true )
-
-        if istrap and istable(istrap) then
-          ent.APG_Ghosted = true
-          ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
-          for _,v in next, istrap do
-            if v:IsPlayer() then
-              local push = v:GetForward()
-              push = push * 1200
-              push.z = 60
-
-              v:SetVelocity(push)
-            end
-          end
-          timer.Simple(1, function()
-						if IsValid(ply) and IsValid(ent) then
-							ent.APG_Ghosted = false
-
-							ent:oldFadeDeactivate()
-							ent:SetCollisionGroup( COLLISION_GROUP_INTERACTIVE )
-
-							if IsValid(istrap) then
-								APG.userNotification( "Unable to unstuck objects from fading door!", ply, 1 )
-								APG.entGhost(ent)
-							end
-						end
-					end)
-				end
+			timer.Simple(0.001, function() 
+				checkdoor(ply, ent)
 			end)
 		end
 	end

@@ -8,7 +8,7 @@
 	Licensed to : http://steamcommunity.com/id/{{ user_id }}
 
 	============================
-	        MISC2 MODULE
+			MISC2 MODULE
 	============================
 
 ]]--------------------------------------------
@@ -108,6 +108,7 @@ local function collcall(ent, data)
 
 	if IsValid(ent) and IsValid(hit) and IsValid(mep) then
 		ent["frzr9k"] = ent["frzr9k"] or {}
+
 		local obj = ent["frzr9k"]
 
 		obj.Collisions = (obj.Collisions or 0) + 1
@@ -118,8 +119,8 @@ local function collcall(ent, data)
 		if obj.Collisions > 23 then
 			obj.Collisions = 0
 			for _,e in next, {mep, hit} do
-				e:SetVelocityInstantaneous(Vector(0,0,0))
-				e:Sleep()
+			e:SetVelocityInstantaneous(Vector(0,0,0))
+			e:Sleep()
 			end
 		end
 
@@ -128,11 +129,11 @@ local function collcall(ent, data)
 			local mem = obj.CollisionTime
 
 			while true do
-				mem = mem + 5
-				subtract = subtract + 1
-				if mem >= obj.LastCollision then
-					break
-				end
+			mem = mem + 5
+			subtract = subtract + 1
+			if mem >= obj.LastCollision then
+				break
+			end
 			end
 
 			obj.Collisions = (obj.Collisions - subtract)
@@ -158,39 +159,39 @@ end)
 -- Requires Fading Door Hooks --
 hookAdd("APG.FadingDoorToggle", "frzr9k", function(ent, faded)
 	if APG.cfg["sleepyPhys"].value and IsValid(ent) and faded then
-    local ply = APG.getOwner(ent)
-    local pos = ent:GetPos()
-    local notification = false
-    local doors = {}
-    local count = 0
+		local ply = APG.getOwner(ent)
+		local pos = ent:GetPos()
+		local notification = false
+		local doors = {}
+		local count = 0
 
-    for _,v in next, ents.FindInSphere(pos, 3) do
-      if v ~= ent and IsValid(v) and v.isFadingDoor and APG.getOwner(v) == o then
-        table.insert(doors, v)
-        count = count + 1
-      end
-    end
+		for _,v in next, ents.FindInSphere(pos, 3) do
+			if v ~= ent and IsValid(v) and v.isFadingDoor and APG.getOwner(v) == o then
+			table.insert(doors, v)
+			count = count + 1
+			end
+		end
 
-    if count > 2 then
-      for _,v in next, doors do
-        v:Remove()
-      end
-      notification = true
-    end
+		if count > 2 then
+			for _,v in next, doors do
+				v:Remove()
+			end
+			notification = true
+		end
 
-    if notification then
-      APG.userNotification("[APG] Some of your fading doors were removed.", ply)
-    end
-  end
+		if notification then
+			APG.userNotification("[APG] Some of your fading doors were removed.", ply)
+		end
+	end
 end)
 
 --[[------------------------------------------
-        Load hooks and timers
+		Load hooks and timers
 ]]--------------------------------------------
 for k, v in next, APG[mod]["hooks"] do
-    hook.Add( v.event, v.identifier, v.func )
+	hook.Add( v.event, v.identifier, v.func )
 end
 
 for k, v in next, APG[mod]["timers"] do
-    timer.Create( v.identifier, v.delay, v.repetitions, v.func )
+	timer.Create( v.identifier, v.delay, v.repetitions, v.func )
 end
