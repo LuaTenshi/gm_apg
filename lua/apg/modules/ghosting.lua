@@ -300,7 +300,7 @@ APG.hookRegister( mod, "CanProperty", "APG_canProperty", function(ply, prop, ent
 end)
 
 -- Custom Hooks --
-local function checkdoor(ply, ent)
+local function checkDoor(ply, ent)
 	local istrap = APG.isTrap(ent, true)
 
 	if istrap and istable(istrap) then
@@ -338,7 +338,7 @@ APG.hookRegister(mod, "APG.FadingDoorToggle", "APG_FadingDoor", function(ent, is
 
 		if (IsValid(ply) and not isFading) then
 			timer.Simple(0.001, function() 
-				checkdoor(ply, ent)
+				checkDoor(ply, ent)
 			end)
 		end
 	end
