@@ -20,6 +20,13 @@ local isentity = isentity
 			ENTITY Related
 ]]--------------------------------------------
 
+	--[[
+		Check if the player can pick up the entity
+		@param {entity} ent
+		@param {player} ply
+		@returns {boolean}
+	]]
+
 function APG.canPhysGun( ent, ply )
 	if not IsValid(ent) then return false end -- The entity isn't valid, don't pickup.
 	if ply.APG_CantPickup then return false end -- Is APG blocking the pickup?
@@ -27,6 +34,12 @@ function APG.canPhysGun( ent, ply )
 
 	return not ent.PhysgunDisabled -- By default everything can be picked up, unless it is PhysgunDisabled.
 end
+
+	--[[
+		Check if the entity is a bad entity, as defined in badEnts
+		@param {entity} ent
+		@returns {boolean}
+	]]
 
 function APG.isBadEnt( ent )
 	if ent and not ent.GetClass then return false end -- Ignore if we can't read the class.
@@ -40,7 +53,7 @@ function APG.isBadEnt( ent )
 	if isbool(h) then return h end
 
 	local class = ent:GetClass()
-	for k, v in pairs (APG.cfg["bad_ents"].value) do
+	for k, v in pairs (APG.cfg["badEnts"].value) do
 		if ( v and k == class ) or (not v and string.find( class, k ) ) then
 			return true
 		end
@@ -49,12 +62,27 @@ function APG.isBadEnt( ent )
 	return false
 end
 
+	--[[
+		Check the props owner
+		@return {player} or nil
+	]]
+
 function APG.getOwner( ent )
 	local owner, _ = ent:CPPIGetOwner() or ent.FPPOwner or nil
 	return owner
 end
 
-local function killvel(phys, freeze)
+	--[[
+		Add's a timer to the module table
+		@param {PhysObj} module
+		@param {string} identifier
+		@param {number} delay
+		@param {number} repetitions
+		@param {function} function
+		@void
+	]]
+
+local function killVel(phys, freeze)
 	local vec = Vector()
 	if not IsValid(phys) then return end
 	if freeze then phys:EnableMotion(false) return end
@@ -71,10 +99,10 @@ function APG.killVelocity(ent, extend, freeze, wake_target)
 	if ent.GetClass and ent:GetClass() == "player" then ent:SetVelocity(ent:GetVelocity() * -1) return end
 	ent:SetVelocity(vec)
 
-	for i = 0, ent:GetPhysicsObjectCount() do killvel(ent:GetPhysicsObjectNum(i), freeze) end -- Includes self?
+	for i = 0, ent:GetPhysicsObjectCount() do killVel(ent:GetPhysicsObjectNum(i), freeze) end -- Includes self?
 
 	if extend then
-		for _,v in next, constraint.GetAllConstrainedEntities(ent) do killvel(v:GetPhysicsObject(), freeze) end
+		for _,v in next, constraint.GetAllConstrainedEntities(ent) do killVel(v:GetPhysicsObject(), freeze) end
 	end
 
 	if wake_target then
@@ -89,12 +117,12 @@ function APG.freezeIt( ent, extend )
 	local obj = ent:GetPhysicsObject()
 	if extend then
 		for _,v in next, constraint.GetAllConstrainedEntities(ent) do
-			killvel(v:GetPhysicsObject(), true)
+			killVel(v:GetPhysicsObject(), true)
 			v.APG_Frozen = true
 		end
 	else
 		if IsValid(obj) then
-			killvel(obj, true)
+			killVel(obj, true)
 			ent.APG_Frozen = true
 		end
 	end
@@ -141,13 +169,13 @@ function APG.cleanUp( mode, notification, specific )
 	end
 	-- TODO : Fancy notification system
 	if notification or APG.cfg["notificationLagFunc"].value then
-		APG.userNotification("Cleaned up (mode: " .. mode .. ")", APG.cfg["notificationLevel"].value, 2)
+		APG.notification("Cleaned up (mode: " .. mode .. ")", APG.cfg["notificationLevel"].value, 2)
 	end
 end
 
 function APG.ghostThemAll( notification )
 	if not APG.modules[ "ghosting" ] then
-		return APG.log("[APG] Warning: Tried to ghost props but ghosting is disabled!")
+		return APG.notification("[APG] Warning: Tried to ghost props but ghosting is disabled!", 1, -1, true)
 	end
 	for _, v in next, ents.GetAll() do
 		if ( not APG.isBadEnt(v) ) or ( not APG.getOwner( v ) ) or APG.IsVehicle(v) or v.APG_Frozen then continue end
@@ -155,7 +183,7 @@ function APG.ghostThemAll( notification )
 	end
 	-- TODO : Fancy notification system
 	if notification or APG.cfg["notificationLagFunc"].value then
-	  APG.userNotification("Unfrozen props ghosted!", APG.cfg["notificationLevel"].value, 1)
+	  APG.notification("Unfrozen props ghosted!", APG.cfg["notificationLevel"].value, 1)
 	end
 end
 
@@ -166,7 +194,7 @@ function APG.freezeProps( notification )
 	end
 	-- TODO : Fancy notification system
 	if notification or APG.cfg["notificationLagFunc"].value then
-	  APG.userNotification("Props frozen", APG.cfg["notificationLevel"].value, 0)
+	  APG.notification("Props frozen", APG.cfg["notificationLevel"].value, 0)
 	end
 end
 
@@ -366,19 +394,6 @@ hook.Add( "OnPhysgunFreeze", "APG_OnPhysgunFreeze", function( weap, phys, ent, p
 	if not APG.isBadEnt( ent ) then return end
 	ent.APG_Frozen = true
 end)
-
-
---[[--------------------
-	Admin utility
-]]----------------------
-
-function APG.log(msg, ply)
-	if type(ply) ~= "string" and IsValid(ply) then
-		ply:PrintMessage(3, msg .. "\n")
-	else
-		print(msg)
-	end
-end
 
 --[[--------------------
 	APG job manager

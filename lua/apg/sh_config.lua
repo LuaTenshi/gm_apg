@@ -61,9 +61,9 @@ defaultSettings.cfg = {
 	--[[----------
 		Ghosting module
 	]]------------
-	ghost_color = { value = Color(34, 34, 34, 220) ,desc = "Color set on ghosted props" },
+	ghostColor = { value = Color(34, 34, 34, 220), desc = "Color set on ghosted props" },
 
-	bad_ents = {
+	badEnts = {
 		value = {
 			["prop_physics"] = true,
 			["wire_"] = false,
@@ -136,7 +136,7 @@ defaultSettings.cfg = {
 	},
 	notificationRanks = {
 	  value = { "trialmod", "moderator", "admin", "superadmin", "owner" },
-	  desc = "The ranks that you want to see the notification"
+	  desc = "The ranks that you want to see the notification" -- If you have notificationULibInheritance you only need to do the lowest rank(s)
 	},
 
 	--[[ Vehicles ]]--
@@ -151,6 +151,10 @@ defaultSettings.cfg = {
 	vehIncludeWAC = {
 	  value = true,
 	  desc = "Check for WAC vehicles."
+	},
+	vehAntiGhost = {
+		value = false,
+		desc = "Toggle vehicle ghosting"
 	},
 
 	--[[ Props related ]]--
@@ -170,8 +174,12 @@ defaultSettings.cfg = {
 	  value = 120,
 	  desc = "Auto freeze timer (seconds)"
 	},
+	removeInvalidPhys = {
+		value = true,
+		desc = "Remove props that don't have a valid physics object?"
+	},
 
-	thFadingDoors = {
+	fadingDoorHook = {
 	  value = true,
 	  desc = "Inject custom hooks into Fading Doors"
 	},
@@ -179,21 +187,21 @@ defaultSettings.cfg = {
 	  value = true,
 	  desc = "Activate fading door ghosting"
 	},
-	dontGhostVehicles = {
-	  value = false,
-	  desc = "Toggle vehicle ghosting"
-	},
 	sleepyPhys = {
 	  value = false,
 	  desc = "Activate FRZR9K (Sleepy Physics)"
 	},
-	hookSP = {
+	sleepyPhysHook = {
 	  value = false,
 	  desc = "Hook FRZR9K into collision (Experimental)"
 	},
 	allowPK = {
 	  value = false,
 	  desc = "Allow prop killing"
+	},
+	developerLog = {
+		value = false,
+		desc = "Dev Logs (prints to everyone console)"
 	}
 }
 

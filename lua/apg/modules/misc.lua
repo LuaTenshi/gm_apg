@@ -36,7 +36,7 @@ end
 --[[--------------------
 	No Collide vehicles on spawn
 ]]----------------------
-APG.hookRegister( mod,"OnEntityCreated", "APG_noCollideVeh", function( ent )
+APG.hookAdd( mod,"OnEntityCreated", "APG_noCollideVeh", function( ent )
 	timer.Simple(0.03, function()
 		if APG.cfg[ "vehNoCollide" ].value and APG.IsVehicle( ent ) then
 			ent:SetCollisionGroup( COLLISION_GROUP_WEAPON )
@@ -47,12 +47,12 @@ end)
 --[[--------------------
 	Disable prop damage
 ]]----------------------
-APG.hookRegister( mod, "EntityTakeDamage","APG_noPropDmg", function( target, dmg )
+APG.hookAdd( mod, "EntityTakeDamage","APG_noPropDmg", function( target, dmg )
 	if ( not APG.cfg[ "allowPK" ].value ) then -- Check if prop kill is allowed, before checking anything else.
 		local atk, ent = dmg:GetAttacker(), dmg:GetInflictor()
 		if APG.isBadEnt( ent ) or dmg:GetDamageType() == DMG_CRUSH or ( APG.cfg[ "vehDamage" ].value and isVehDamage( dmg, atk, ent ) ) then
 			dmg:SetDamage(0)
-			return true 
+			return true
 			-- ^ Returning true overrides and blocks all related damage, it also prevents the hook from running any further preventing unintentional damage from other addons.
 		end
 	end
@@ -61,9 +61,9 @@ end)
 --[[--------------------
 	Block Physgun Reload
 ]]----------------------
-APG.hookRegister( mod, "OnPhysgunReload", "APG_blockPhysgunReload", function( _, ply )
+APG.hookAdd( mod, "OnPhysgunReload", "APG_blockPhysgunReload", function( _, ply )
 	if APG.cfg[ "blockPhysgunReload" ].value then
-		--APG.userNotification("Physgun Reloading is Currently Disabled", ply, 1)
+		--APG.notification("Physgun Reloading is Currently Disabled", ply, 1)
 		return false
 	end
 end)
@@ -71,7 +71,7 @@ end)
 --[[--------------------
 	Auto prop freeze
 ]]----------------------
-APG.timerRegister( mod, "APG_autoFreeze", APG.cfg[ "autoFreezeTime" ].value, 0, function()
+APG.timerAdd( mod, "APG_autoFreeze", APG.cfg[ "autoFreezeTime" ].value, 0, function()
 	if APG.cfg[ "autoFreeze" ].value then
 		APG.freezeProps()
 	end
@@ -80,10 +80,6 @@ end)
 --[[------------------------------------------
 		Load hooks and timers
 ]]--------------------------------------------
-for k, v in next, APG[mod]["hooks"] do
-	hook.Add( v.event, v.identifier, v.func )
-end
 
-for k, v in next, APG[mod]["timers"] do
-	timer.Create( v.identifier, v.delay, v.repetitions, v.func )
-end
+APG.updateHooks(mod)
+APG.updateTimers(mod)

@@ -8,14 +8,14 @@
 	Licensed to : http://steamcommunity.com/id/{{ user_id }}
 
 	============================
-	 GHOSTING/UNGHOSTING MODULE
+	GHOSTING/UNGHOSTING MODULE
 	============================
 
 	Developer informations :
 	---------------------------------
 	Used variables :
-		ghost_color = { value = Color(34, 34, 34, 220), desc = "Color set on ghosted props" }
-		bad_ents = {
+		ghostColor = { value = Color(34, 34, 34, 220), desc = "Color set on ghosted props" }
+		badEnts = {
 			value = {
 				["prop_physics"] = true,
 				["wire_"] = false,
@@ -31,7 +31,7 @@ local mod = "ghosting"
 		Override base functions
 ]]--------------------------------------------
 local ENT = FindMetaTable( "Entity" )
-APG._SetColGroup = APG._SetColGroup or ENT.SetCollisionGroup
+APG._SetCollisionGroup = APG._SetCollisionGroup or ENT.SetCollisionGroup
 
 function ENT:SetCollisionGroup( group )
 	local group = group
@@ -47,7 +47,28 @@ function ENT:SetCollisionGroup( group )
 		group = COLLISION_GROUP_INTERACTIVE
 	end
 
-	return APG._SetColGroup( self, group )
+	return APG._SetCollisionGroup( self, group )
+end
+
+ENT._SetColor = ENT._SetColor or ENT.SetColor
+
+function ENT:SetColor( color, ... )
+	local color = color
+	local r, g, b, a
+
+	if type(color) == "number" then
+		color = Color(color, select(1, ...) or 255, select(2, ...) or 255, select(3, ...) or 255)
+	elseif type(color) == "table" and not IsColor(color) then
+		r = color.r or color[1] or 255
+		g = color.g or color[2] or 255
+		b = color.b or color[3] or 255
+		a = color.a or color[4] or 255
+		color = Color(r, g, b, a)
+	end
+
+	assert( IsColor(color), "Invalid color passed to SetColor! \n This error prevents stuff from turning purple/pink." )
+
+	return self:_SetColor( color )
 end
 
 local PhysObj = FindMetaTable( "PhysObj" )
@@ -104,7 +125,7 @@ end
 
 function APG.entGhost( ent, enforce, noCollide )
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
-	if APG.cfg["dontGhostVehicles"].value and APG.IsVehicle( ent ) then return end
+	if APG.cfg["vehAntiGhost"].value and APG.IsVehicle( ent ) then return end
 	if ent.jailWall then return end
 
 	if not ent.APG_Ghosted then
@@ -141,7 +162,7 @@ function APG.entGhost( ent, enforce, noCollide )
 				end
 			end
 
-			ent:SetColor( APG.cfg[ "ghost_color" ].value )
+			ent:SetColor( APG.cfg[ "ghostColor" ].value )
 		end)
 
 		ent.APG_oldRenderMode = ent:GetRenderMode()
@@ -182,10 +203,14 @@ function APG.entUnGhost( ent, ply, failmsg )
 
 			ent:SetCollisionGroup( newColGroup )
 
+			ent:CollisionRulesChanged()
+
 			return true
 		else
-			APG.userNotification( failmsg or "There is something in this prop!", ply, 1 )
+			APG.notification( failmsg or "There is something in this prop!", ply, 1 )
 			ent:SetCollisionGroup( COLLISION_GROUP_WORLD )
+
+			ent:CollisionRulesChanged()
 
 			return false
 		end
@@ -205,7 +230,7 @@ end
 		Hooks/Timers
 ]]--------------------------------------------
 
-APG.hookRegister( mod, "PhysgunPickup", "APG_makeGhost", function(ply, ent)
+APG.hookAdd( mod, "PhysgunPickup", "APG_makeGhost", function(ply, ent)
 	if not APG.canPhysGun( ent, ply ) then return end
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
 
@@ -222,20 +247,26 @@ APG.hookRegister( mod, "PhysgunPickup", "APG_makeGhost", function(ply, ent)
 	end
 end)
 
-APG.hookRegister( mod, "PlayerUnfrozeObject", "APG_unFreezeInteract", function (ply, ent, object)
+APG.hookAdd( mod, "PlayerUnfrozeObject", "APG_unFreezeInteract", function (ply, ent, object)
 	if not APG.canPhysGun( ent, ply ) then return end
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
-	if APG.cfg[ "alwaysFrozen" ].value then return false end -- Do not unfreeze if Always Frozen is enabled !
+	if APG.cfg[ "alwaysFrozen" ].value then
+		APG.log("[APG-UNFREEZE]" .. ply:Nick() .. " unfroze " .. ent .. " but alwaysFrozen is enabled!")
+		return false
+	 end -- Do not unfreeze if Always Frozen is enabled !
 	if ent:GetCollisionGroup( ) ~= COLLISION_GROUP_WORLD then
+		APG.log("[APG-UNFREEZE]" .. ply:Nick() .. " unfroze " .. ent)
 		ent:SetCollisionGroup( COLLISION_GROUP_INTERACTIVE )
 	end
 end)
 
 APG.dJobRegister( "unghost", 0.1, 50, function( ent )
-	if IsValid(ent) then APG.entUnGhost( ent ) end
+	if IsValid(ent) then
+		APG.entUnGhost( ent )
+	end
 end)
 
-APG.hookRegister( mod, "PhysgunDrop", "APG_pGunDropUnghost", function( ply, ent )
+APG.hookAdd( mod, "PhysgunDrop", "APG_pGunDropUnghost", function( ply, ent )
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
 	ent.APG_Picked = false
 
@@ -260,7 +291,7 @@ local function SafeSetCollisionGroup( ent, colgroup, pobj )
 	ent:SetCollisionGroup(colgroup)
 end
 
-APG.hookRegister( mod, "OnEntityCreated", "APG_noColOnCreate", function( ent )
+APG.hookAdd( mod, "OnEntityCreated", "APG_noColOnCreate", function( ent )
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
 	if not IsValid( ent ) then return end
 	if ent:GetClass() == "gmod_hands" then return end -- Fix shadow glitch
@@ -283,6 +314,14 @@ APG.hookRegister( mod, "OnEntityCreated", "APG_noColOnCreate", function( ent )
 					SafeSetCollisionGroup( ent, COLLISION_GROUP_INTERACTIVE )
 				end
 				pObj:RecheckCollisionFilter()
+
+			-- Need's a whitelist to allow specific mods
+			-- else
+			-- 	if not APG.cfg["removeInvalidPhys"].value then return end
+			-- 	timer.Simple(0, function()
+			-- 		ent:Remove()
+			-- 		APG.log(tostring(ent) .. " spawned by " .. owner:Nick() .. " doesn't have physics!")
+			-- 	end)
 			end
 		end
 
@@ -291,10 +330,10 @@ APG.hookRegister( mod, "OnEntityCreated", "APG_noColOnCreate", function( ent )
 end)
 
 local BlockedProperties = { "collision", "persist", "editentity", "drive", "ignite", "statue" }
-APG.hookRegister( mod, "CanProperty", "APG_canProperty", function(ply, prop, ent)
-	local prop = tostring( prop )
-	if ( table.HasValue(BlockedProperties, prop) and ent.APG_Ghosted ) then
-		APG.log( "Cannot set " .. prop .. " properties on ghosted entities!", ply)
+APG.hookAdd( mod, "CanProperty", "APG_canProperty", function(ply, property, ent)
+	local property = tostring( property )
+	if ( table.HasValue(BlockedProperties, property) and ent.APG_Ghosted ) then
+		APG.notification( "Cannot set " .. property .. " properties on ghosted entities!", ply, -1, true)
 		return false
 	end
 end)
@@ -307,7 +346,7 @@ local function checkDoor(ply, ent)
 		ent.APG_Ghosted = true
 		ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
 
-		for _,v in next, istrap do
+		for _,v in next, isTrap do
 			if v:IsPlayer() then
 				local push = v:GetForward()
 				push = push * 1200
@@ -316,7 +355,7 @@ local function checkDoor(ply, ent)
 				v:SetVelocity(push)
 			end
 		end
-		
+
 		timer.Simple(1, function()
 			if IsValid(ply) and IsValid(ent) then
 				ent.APG_Ghosted = false
@@ -324,7 +363,8 @@ local function checkDoor(ply, ent)
 				ent:SetCollisionGroup( COLLISION_GROUP_INTERACTIVE )
 
 				if IsValid(isTrap) then
-					APG.userNotification( "Unable to unstuck objects from fading door!", ply, 1 )
+					APG.log("CantUnstuck " .. ply:GetName() .. " from " .. ent)
+					APG.notification( "Unable to unstuck objects from fading door!", ply, 1 )
 					APG.entGhost(ent)
 				end
 			end
@@ -332,12 +372,12 @@ local function checkDoor(ply, ent)
 	end
 end
 
-APG.hookRegister(mod, "APG.FadingDoorToggle", "APG_FadingDoor", function(ent, isFading)
+APG.hookAdd(mod, "APG.FadingDoorToggle", "APG_FadingDoor", function(ent, isFading)
 	if APG.isBadEnt(ent) and APG.cfg["fadingDoorGhosting"].value then
 		local ply = APG.getOwner( ent )
 
-		if (IsValid(ply) and not isFading) then
-			timer.Simple(0.001, function() 
+		if (ply:IsPlayer() and not isFading) then
+			timer.Simple(0.001, function()
 				checkDoor(ply, ent)
 			end)
 		end
@@ -347,10 +387,6 @@ end)
 --[[------------------------------------------
 		Load hooks and timers
 ]]--------------------------------------------
-for k, v in next, APG[ mod ][ "hooks" ] do
-	hook.Add( v.event, v.identifier, v.func )
-end
 
-for k, v in next, APG[ mod ][ "timers" ] do
-	timer.Create( v.identifier, v.delay, v.repetitions, v.func )
-end
+APG.updateHooks(mod)
+APG.updateTimers(mod)

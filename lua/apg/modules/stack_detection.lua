@@ -36,15 +36,15 @@ function APG.checkStack( ent, pcount )
 		ent:Remove()
 		if not owner.APG_CantPickup then
 			APG.blockPickup( owner )
-			APG.userNotification("Do not try to crash the server!", owner, 1)
+			APG.notification("Do not try to crash the server!", owner, 1)
 
 			local msg = owner:Nick() .. " [" .. owner:SteamID() .. "]" .. " tried to unfreeze a stack of props!"
-			APG.userNotification(msg, APG.cfg["notificationLevel"].value, 2)
+			APG.notification(msg, APG.cfg["notificationLevel"].value, 2)
 		end
 	end
 end
 
-APG.hookRegister(mod, "PhysgunPickup","APG_stackCheck",function(ply, ent)
+APG.hookAdd(mod, "PhysgunPickup","APG_stackCheck",function(ply, ent)
 	if not APG.canPhysGun( ent, ply ) then return end
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
 	APG.checkStack( ent )
@@ -76,10 +76,6 @@ end)
 --[[------------------------------------------
 		Load hooks and timers
 ]]--------------------------------------------
-for k, v in next, APG[mod]["hooks"] do
-	hook.Add( v.event, v.identifier, v.func )
-end
 
-for k, v in next, APG[mod]["timers"] do
-	timer.Create( v.identifier, v.delay, v.repetitions, v.func )
-end
+APG.updateHooks(mod)
+APG.updateTimers(mod)

@@ -26,9 +26,9 @@ local function showNotice(notificationLevel, notificationMessage)
 end
 
 net.Receive( "apg_notice_s2c", function()
-  local notificationLevel = net.ReadUInt( 3 )
-  local notificationMessage = net.ReadString()
-  showNotice(notificationLevel, notificationMessage)
+	local notificationLevel = net.ReadUInt( 3 )
+	local notificationMessage = net.ReadString()
+	showNotice(notificationLevel, notificationMessage)
 end)
 
 local function APGBuildStackPanel()
@@ -75,9 +75,9 @@ local function APGBuildToolHackPanel()
 	local panel = APG_panels[ "misc2" ]
 	panel.Paint = function( i, w, h ) end
 
-	utils.switch( panel, 0, 40, 395, 20, "Inject custom hooks into Fading Doors", "thFadingDoors" )
+	utils.switch( panel, 0, 40, 395, 20, "Inject custom hooks into Fading Doors", "fadingDoorHook" )
 	utils.switch( panel, 0, 75, 395, 20, "Activate FRZR9K (Sleepy Physics)", "sleepyPhys" )
-	utils.switch( panel, 0, 110, 395, 20, "Hook FRZR9K into collision (Experimental)", "hookSP" )
+	utils.switch( panel, 0, 110, 395, 20, "Hook FRZR9K into collision (Experimental)", "sleepyPhysHook" )
 	utils.switch( panel, 0, 145, 395, 20, "Allow prop killing", "allowPK" )
 end
 
@@ -93,13 +93,13 @@ local function APGBuildGhostPanel()
 	end
 	utils.switch( panel, 0, 180, 170, 20, "Always frozen", "alwaysFrozen" )
 	utils.switch( panel, 0, 215, 170, 20, "Apply to doors", "fadingDoorGhosting" )
-	utils.switch( panel, 0, 250, 170, 20, "Ignore Vehicles", "dontGhostVehicles" )
+	utils.switch( panel, 0, 250, 170, 20, "Ignore Vehicles", "vehAntiGhost" )
 
 	local Mixer = vgui.Create( "CtrlColor", panel )
 	Mixer:SetPos( 5, 55 )
 	Mixer:SetSize( 160, 110 )
 	Mixer.Mixer.ValueChanged = function( self, color )
-		APG.cfg[ "ghost_color" ].value = Color( color.r, color.g, color.b, color.a)
+		APG.cfg[ "ghostColor" ].value = Color( color.r, color.g, color.b, color.a)
 	end
 
 	local dList = vgui.Create( "DListView", panel )
@@ -115,12 +115,12 @@ local function APGBuildGhostPanel()
 		local key = line:GetColumnText(1)
 		local value = not tobool(line:GetColumnText(2))
 		line:SetColumnText( 2, value )
-		APG.cfg[ "bad_ents" ].value[key] = value
+		APG.cfg[ "badEnts" ].value[key] = value
 	end
 
 	local function updateTab()
 		dList:Clear()
-		for class,complete in pairs(APG.cfg[ "bad_ents" ].value) do
+		for class,complete in pairs(APG.cfg[ "badEnts" ].value) do
 			dList:AddLine(class, complete)
 		end
 	end
@@ -176,7 +176,7 @@ local function APGBuildGhostPanel()
 	Remove.DoClick = function()
 		for k,v in pairs(dList:GetSelected()) do
 			local key = v:GetValue(1)
-			APG.cfg[ "bad_ents" ].value[key] = nil
+			APG.cfg[ "badEnts" ].value[key] = nil
 			updateTab()
 		end
 	end
@@ -229,6 +229,7 @@ local function openMenu( len )
 	saveButton:SetSize( 72, 16 )
 	saveButton:SetText('')
 	saveButton.DoClick = function()
+		if not LocalPlayer():IsSuperAdmin() then return end
 		local settings = APG
 		settings = util.TableToJSON( settings )
 		settings = util.Compress( settings )
@@ -397,22 +398,31 @@ properties.Add( "apgoptions", {
 			icon = "icon16/tick.png",
 			callback = function() self:APGcmd( ent, "remghost" ) end,
 		})
+
+		submenu:AddSpacer()
+
+		addoption( "Ghost this entity", {
+			icon = "icon16/tick.png",
+			callback = function() self:APGcmd( ent, "ghost" ) end,
+		})
+
 	end,
 	Action = function( self, ent ) end,
 	APGcmd = function( self, ent, cmd )
 		if cmd == "getownerid" then
 			local owner, _ = ent:CPPIGetOwner()
-			if IsValid( owner ) and owner.SteamID() then
+			if IsValid( owner ) then
 				local id = tostring( owner:SteamID() )
+				local name = tostring( owner:Nick() )
 				SetClipboardText( id )
-				chat.AddText( Color( 0, 255, 0 ), "\n\"" .. id .. "\" has been copied to your clipboard.\n")
+				chat.AddText( Color( 0, 255, 0 ), name .. " [ " ..  id .. " ]" .. " has been copied to your clipboard.\n")
 			else
 			   chat.AddText( Color( 255, 0, 0 ), "\nOops, that's not a Player!\n")
 			end
 		elseif IsValid( ent ) and ent.EntIndex() then
 			net.Start( "apg_context_c2s" )
 				net.WriteString( cmd )
-				net.WriteEntity( ent)
+				net.WriteEntity( ent )
 			net.SendToServer()
 		end
 	end,

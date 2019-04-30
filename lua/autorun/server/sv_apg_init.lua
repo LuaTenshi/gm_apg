@@ -22,13 +22,62 @@ for _,v in next, modules do
 	end
 end
 
-function APG.hookRegister( module, event, identifier, func )
+	--[[
+		Add's a hook to the module table
+		@param {string} module
+		@param {string} event
+		@param {string} identifier
+		@param {function} function
+		@void
+	]]
+
+
+function APG.hookAdd( module, event, identifier, func )
 	table.insert( APG[ module ][ "hooks"], { event = event, identifier = identifier, func = func })
 end
 
-function APG.timerRegister( module, identifier, delay, repetitions, func )
+--[[
+	Adds all the hooks that the module needs
+	@param {string} module
+	@void
+]]
+
+function APG.updateHooks( module )
+	for k, v in next, APG[module]["hooks"] do
+		hook.Add( v.event, v.identifier, v.func )
+	end
+end
+
+--[[
+	Add's a timer to the module table
+	@param {string} module
+	@param {string} identifier
+	@param {number} delay
+	@param {number} repetitions
+	@param {function} function
+	@void
+]]
+
+function APG.timerAdd( module, identifier, delay, repetitions, func )
 	table.insert( APG[ module ][ "timers"], { identifier = identifier, delay = delay, repetitions = repetitions, func = func } )
 end
+
+--[[
+	Add's a the timers a module needs.
+	@param {string} module
+	@void
+]]
+function APG.updateTimers(module)
+	for k, v in next, APG[module]["timers"] do
+		timer.Create( v.identifier, v.delay, v.repetitions, v.func )
+	end
+end
+
+--[[
+	Load's a APG module
+	@param {string} module
+	@void
+]]
 
 function APG.load( module )
 	APG.unLoad( module )
@@ -36,6 +85,12 @@ function APG.load( module )
 	include( "apg/modules/" .. module .. ".lua" )
 	print("[APG] " .. module .. " loaded.")
 end
+
+--[[
+	Unload's a APG module
+	@param {string} module
+	@void
+]]
 
 function APG.unLoad( module )
 	APG.modules[module] = false
@@ -65,6 +120,8 @@ function APG.reload( )
 		end
 	end
 end
+
+
 --[[------------------------------------------
 			LOADING
 ]]--------------------------------------------

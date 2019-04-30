@@ -69,7 +69,7 @@ function utils.addBadEntity( class )
 			end
 		end
 	end
-	APG.cfg["bad_ents"].value[ class ] = found
+	APG.cfg["badEnts"].value[ class ] = found
 end
 
 function utils.getNiceName( str )

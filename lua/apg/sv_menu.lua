@@ -26,7 +26,7 @@ end
 net.Receive( "apg_settings_c2s", recSettings)
 
 local function sendToClient( ply )
-	local settings = {}
+local settings = {}
 	settings.cfg = APG.cfg or {}
 	settings.modules = APG.modules or {}
 
@@ -50,10 +50,14 @@ local function checkOwner(owner, ply)
 	if ( IsValid(owner) and owner:IsPlayer() ) then
 		return true
 	else
-		APG.userNotification("The owner of this entity is NOT a Player. (Owner: " .. type(owner) .. ")", ply)
+		APG.notification("The owner of this entity is NOT a Player. (Owner: " .. type(owner) .. ")", ply)
 		return false
 	end
 end
+
+
+-- TODO: Revamp this, really don't like how it looks, would rather have a function for each
+-- it's too clustered.
 
 local function contextCMD(_,ply)
 	if not ply:IsSuperAdmin() then return end
@@ -69,15 +73,15 @@ local function contextCMD(_,ply)
 	local owner = APG.getOwner(ent)
 
 	if cmd == "addghost" then
-		if not APG.cfg.bad_ents.value[class] then
-			APG.cfg.bad_ents.value[class] = true
-			APG.userNotification("\"" .. class .. "\" added to Ghost List!", ply)
+		if not APG.cfg.badEnts.value[class] then
+			APG.cfg.badEnts.value[class] = true
+			APG.notification("\"" .. class .. "\" added to Ghost List!", ply)
 		else
-			APG.userNotification("This class is already listed!", ply)
+			APG.notification("This class is already listed!", ply)
 		end
 	elseif cmd == "remghost" then
-		APG.cfg.bad_ents.value[class] = nil
-		APG.userNotification("\"" .. class .. "\" removed from the Ghost List!", ply)
+		APG.cfg.badEnts.value[class] = nil
+		APG.notification("\"" .. class .. "\" removed from the Ghost List!", ply)
 	elseif cmd == "clearowner" then
 		if not checkOwner(owner, ply) then return end
 		cleanup.CC_Cleanup(owner,"gmod_cleanup",{})
@@ -94,7 +98,7 @@ local function contextCMD(_,ply)
 			end
 		end
 
-		APG.userNotification(tostring(count) .. " entities have been removed!", ply)
+		APG.notification(tostring(count) .. " entities have been removed!", ply)
 	elseif cmd == "getownercount" then
 		if not checkOwner(owner, ply) then return end
 
@@ -105,7 +109,7 @@ local function contextCMD(_,ply)
 			end
 		end
 
-		APG.userNotification(tostring(owner:Nick()) .. " has " .. count .. (count == 1 and " entity." or " entities."), ply)
+		APG.notification(tostring(owner:Nick()) .. " has " .. count .. (count == 1 and " entity." or " entities."), ply)
 	elseif cmd == "freezeclass" then
 		local count = 0
 		for _,v in next, ents.FindByClass(class) do
@@ -114,7 +118,7 @@ local function contextCMD(_,ply)
 				APG.killVelocity(v, false, true, false)
 			end
 		end
-		APG.userNotification((count or 0) .. (count == 1 and " Entity" or " Entities") .. " Frozen", ply)
+		APG.notification((count or 0) .. (count == 1 and " Entity" or " Entities") .. " Frozen", ply)
 	elseif cmd == "sleepclass" then
 		local count = 0
 		for _,v in next, ents.FindByClass(class) do
@@ -123,7 +127,9 @@ local function contextCMD(_,ply)
 				APG.killVelocity(v, false, false, false)
 			end
 		end
-		APG.userNotification((count or 0) .. (count == 1 and " Entity is" or " Entities are") .. " now Sleeping", ply)
+		APG.notification((count or 0) .. (count == 1 and " Entity is" or " Entities are") .. " now Sleeping", ply)
+	elseif cmd == "ghost" then
+		APG.entGhost(ent)
 	end
 
 	if cmd == "addghost" or cmd == "remghost" then

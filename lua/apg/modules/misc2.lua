@@ -14,28 +14,23 @@
 ]]--------------------------------------------
 local mod = "misc2"
 
-local function hookAdd(call, key, func)
-	APG.hookRegister(mod, call, key, func)
-end
-
-local function timerMake(id, delay, times, func)
-	APG.timerRegister(mod, id, delay, times, func)
-end
-
-local function getphys(ent)
+local function getPhys(ent)
 	local phys = IsValid(ent) and ent.GetPhysicsObject and ent:GetPhysicsObject() or false
 	return IsValid(phys) and phys or false
 end
 
-hookAdd("CanTool", "APG_canTool", function(ply, tr, tool)
+APG.hookAdd(mod, "CanTool", "APG_canTool", function(ply, tr, tool)
 	if IsValid(tr.Entity) and tr.Entity.APG_Ghosted then
-		APG.userNotification("Cannot use tool on ghosted entity!", ply, 1)
+		APG.notification("Cannot use tool on ghosted entity!", ply, 1)
 		return false
 	end
-	if APG.cfg["thFadingDoors"].value and tool == "fading_door" then
+
+	if APG.cfg["fadingDoorHook"].value and tool == "fading_door" then
 		timer.Simple(0, function()
 			if IsValid(tr.Entity) and not tr.Entity:IsPlayer() then
 				local ent = tr.Entity
+
+
 
 				if not IsValid(ent) then return end
 				if not ent.isFadingDoor then return end
@@ -68,7 +63,7 @@ hookAdd("CanTool", "APG_canTool", function(ply, tr, tool)
 	end
 end)
 
-hookAdd("APG.FadingDoorToggle", "init", function(ent, state, ply)
+APG.hookAdd(mod, "APG.FadingDoorToggle", "init", function(ent, state, ply)
 	if ent.APG_Ghosted then
 		APG.entUnGhost(ent, ply, "Your fading door is ghosted! (" .. ( ent.GetModel and ent:GetModel() or "???" ) .. ")")
 		return true
@@ -76,7 +71,7 @@ hookAdd("APG.FadingDoorToggle", "init", function(ent, state, ply)
 
 	ent:ForcePlayerDrop()
 
-	local phys = getphys(ent)
+	local phys = getPhys(ent)
 	if phys then
 		phys:EnableMotion(false)
 	end
@@ -87,10 +82,10 @@ end)
 local zero = Vector(0,0,0)
 local pstop = FrameTime() * 3
 
-timerMake("frzr9k", pstop, 0, function()
+APG.timerAdd(mod, "frzr9k", pstop, 0, function()
 	if APG.cfg["sleepyPhys"].value then
 		for _,v in next, ents.GetAll() do
-			local phys = getphys(v)
+			local phys = getPhys(v)
 			if IsValid(phys) and phys:IsMotionEnabled() and not v:IsPlayerHolding() then
 				local vel = v:GetVelocity()
 				if vel:Distance(zero) <= 23 then
@@ -146,10 +141,10 @@ local function collcall(ent, data)
 	end
 end
 
-hookAdd("OnEntityCreated", "frzr9k", function(ent)
-	if APG.cfg["sleepyPhys"].value and APG.cfg["hookSP"].value then
+APG.hookAdd(mod, "OnEntityCreated", "frzr9k", function(ent)
+	if APG.cfg["sleepyPhys"].value and APG.cfg["sleepyPhysHook"].value then
 		timer.Simple(0.1, function()
-			if IsValid(ent) and ent.GetPhysicsObject and IsValid(ent:GetPhysicsObject()) then
+			if IsValid(ent) and ent.getPhysicsObject and IsValid(ent:GetPhysicsObject()) then
 				ent:AddCallback("PhysicsCollide", collcall)
 			end
 		end)
@@ -157,7 +152,7 @@ hookAdd("OnEntityCreated", "frzr9k", function(ent)
 end)
 
 -- Requires Fading Door Hooks --
-hookAdd("APG.FadingDoorToggle", "frzr9k", function(ent, faded)
+APG.hookAdd(mod, "APG.FadingDoorToggle", "frzr9k", function(ent, faded)
 	if APG.cfg["sleepyPhys"].value and IsValid(ent) and faded then
 		local ply = APG.getOwner(ent)
 		local pos = ent:GetPos()
@@ -180,7 +175,7 @@ hookAdd("APG.FadingDoorToggle", "frzr9k", function(ent, faded)
 		end
 
 		if notification then
-			APG.userNotification("[APG] Some of your fading doors were removed.", ply)
+			APG.notification("[APG] Some of your fading doors were removed.", ply)
 		end
 	end
 end)
@@ -188,10 +183,6 @@ end)
 --[[------------------------------------------
 		Load hooks and timers
 ]]--------------------------------------------
-for k, v in next, APG[mod]["hooks"] do
-	hook.Add( v.event, v.identifier, v.func )
-end
 
-for k, v in next, APG[mod]["timers"] do
-	timer.Create( v.identifier, v.delay, v.repetitions, v.func )
-end
+APG.updateHooks(mod)
+APG.updateTimers(mod)
