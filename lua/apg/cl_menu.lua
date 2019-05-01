@@ -1,13 +1,3 @@
---[[------------------------------------------
-
-	A.P.G. - a lightweight Anti Prop Griefing solution (v{{ script_version_name }})
-	Made by :
-	- While True (http://steamcommunity.com/id/76561197972967270)
-	- LuaTenshi (http://steamcommunity.com/id/76561198096713277)
-
-	Licensed to : http://steamcommunity.com/id/{{ user_id }}
-
-]]--------------------------------------------
 APG_panels = APG_panels or {}
 
 local utils = include( "cl_utils.lua" ) or { }
@@ -337,7 +327,7 @@ properties.Add( "apgoptions", {
 		if not ply:IsSuperAdmin() then return false end
 		if not IsValid(ent) then return false end
 		if not ent:GetClass() then return false end
-		if not (ent:EntIndex() > 0) then return false end
+		if ent:EntIndex() < 0 then return false end
 
 		return true
 	end,
@@ -415,9 +405,9 @@ properties.Add( "apgoptions", {
 				local id = tostring( owner:SteamID() )
 				local name = tostring( owner:Nick() )
 				SetClipboardText( id )
-				chat.AddText( Color( 0, 255, 0 ), name .. " [ " ..  id .. " ]" .. " has been copied to your clipboard.\n")
+				showNotice(0, name .. " [ " ..  id .. " ]" .. " has been copied to your clipboard.")
 			else
-			   chat.AddText( Color( 255, 0, 0 ), "\nOops, that's not a Player!\n")
+			   showNotice(0, "\nOops, that's not a Player!")
 			end
 		elseif IsValid( ent ) and ent.EntIndex() then
 			net.Start( "apg_context_c2s" )

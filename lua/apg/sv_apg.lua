@@ -1,14 +1,3 @@
---[[------------------------------------------
-
-	A.P.G. - a lightweight Anti Prop Griefing solution (v{{ script_version_name }})
-	Made by :
-	- While True (http://steamcommunity.com/id/76561197972967270)
-	- LuaTenshi (http://steamcommunity.com/id/76561198096713277)
-
-	Licensed to : http://steamcommunity.com/id/{{ user_id }}
-
-]]--------------------------------------------
-
 util.AddNetworkString("apg_notice_s2c")
 APG = APG or {}
 
@@ -74,7 +63,7 @@ end
 
 	--[[
 		Add's a timer to the module table
-		@param {PhysObj} module
+		@param {string} module
 		@param {string} identifier
 		@param {number} delay
 		@param {number} repetitions
@@ -453,7 +442,7 @@ function APG.startDJob( job, content )
 end
 
 hook.Add("InitPostEntity", "APG_Load", function()
-	timer.Simple(0, function() -- Make sure we load last!
+	timer.Simple(10, function() -- 10 seconds, so in the future APG wont throw errors on start
 		APG.reload()
 	end)
 end)

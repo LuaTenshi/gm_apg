@@ -1,12 +1,5 @@
 --[[------------------------------------------
 
-	A.P.G. - a lightweight Anti Prop Griefing solution (v{{ script_version_name }})
-	Made by :
-	- While True (http://steamcommunity.com/id/76561197972967270)
-	- LuaTenshi (http://steamcommunity.com/id/76561198096713277)
-
-	Licensed to : http://steamcommunity.com/id/{{ user_id }}
-
 	============================
 	GHOSTING/UNGHOSTING MODULE
 	============================
@@ -376,7 +369,8 @@ APG.hookAdd(mod, "APG.FadingDoorToggle", "APG_FadingDoor", function(ent, isFadin
 	if APG.isBadEnt(ent) and APG.cfg["fadingDoorGhosting"].value then
 		local ply = APG.getOwner( ent )
 
-		if (ply:IsPlayer() and not isFading) then
+		if (IsValid(ply) and ply:IsPlayer() and not isFading) then
+			-- If you make a timer small enough it will call multiple times a second
 			timer.Simple(0.001, function()
 				checkDoor(ply, ent)
 			end)

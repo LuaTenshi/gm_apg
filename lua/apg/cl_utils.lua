@@ -1,14 +1,3 @@
---[[------------------------------------------
-
-	A.P.G. - a lightweight Anti Prop Griefing solution (v{{ script_version_name }})
-	Made by :
-	- While True (http://steamcommunity.com/id/76561197972967270)
-	- LuaTenshi (http://steamcommunity.com/id/76561198096713277)
-
-	Licensed to : http://steamcommunity.com/id/{{ user_id }}
-
-]]--------------------------------------------
-
 surface.CreateFont( "APG_title_font", {
 	font = "Arial",
 	size = 14,

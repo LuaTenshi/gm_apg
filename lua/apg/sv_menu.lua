@@ -101,13 +101,8 @@ local function contextCMD(_,ply)
 		APG.notification(tostring(count) .. " entities have been removed!", ply)
 	elseif cmd == "getownercount" then
 		if not checkOwner(owner, ply) then return end
-
 		local count = 0
-		for _,v in next, ents.GetAll() do
-			if IsValid(v) and APG.getOwner(v) == owner then
-				count = count + 1
-			end
-		end
+		count = owner:GetCount("props")
 
 		APG.notification(tostring(owner:Nick()) .. " has " .. count .. (count == 1 and " entity." or " entities."), ply)
 	elseif cmd == "freezeclass" then
@@ -130,6 +125,7 @@ local function contextCMD(_,ply)
 		APG.notification((count or 0) .. (count == 1 and " Entity is" or " Entities are") .. " now Sleeping", ply)
 	elseif cmd == "ghost" then
 		APG.entGhost(ent)
+		APG.notification(ent:Name() .. " was ghosted.")
 	end
 
 	if cmd == "addghost" or cmd == "remghost" then
