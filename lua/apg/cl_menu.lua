@@ -59,6 +59,7 @@ local function APGBuildNotificationPanel()
 	utils.switch( panel, 0, 40, 395, 20, "Notification Sounds", "notificationSounds" )
 	utils.numSlider( panel, 0, 75, 500, 20, "Notification Level", "notificationLevel", 1, 3, 0 )
 	utils.switch( panel, 0, 110, 395, 20, "Do you want to show which lag function ran?", "notificationLagFunc" )
+	utils.switch( panel, 0, 145, 395, 20, "Developer logs (shows a notification, is spammy)", "developerLogs" )
 end
 
 local function APGBuildToolHackPanel()

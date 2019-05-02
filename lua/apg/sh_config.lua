@@ -71,7 +71,7 @@ defaultSettings.cfg = {
 		Stack detection module
 	]]------------
 	stackMax = {
-	  value = 20,
+	  value = 15,
 	  desc = "Max amount of entities stacked in a small area"
 	},
 	stackArea = {

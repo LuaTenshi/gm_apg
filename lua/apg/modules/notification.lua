@@ -89,6 +89,7 @@ end
 -- really basic, just so I don't have to constantly look back at the gmod server console
 function APG.log(msg)
 	if not APG.cfg["developerLogs"].value then return end
+	local notif = 1
 	local targets = {}
 	local new_targets = {}
 	for _, ply in next, player.GetHumans() do
@@ -100,7 +101,7 @@ function APG.log(msg)
 	for _, v in next, targets do
 		if not IsValid(v) then continue end
 		net.Start("apg_notice_s2c")
-			net.WriteUInt(3, 3)
+			net.WriteUInt(notif, 3)
 			net.WriteString(msg)
 		net.Send(v)
 	end

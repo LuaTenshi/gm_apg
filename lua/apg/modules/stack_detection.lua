@@ -31,7 +31,7 @@ function APG.checkStack( ent, pcount )
 			APG.blockPickup( owner )
 			APG.notification("Do not try to crash the server!", owner, 1)
 
-			local msg = owner:Nick() .. " [" .. owner:SteamID() .. "]" .. " tried to unfreeze a stack of props!"
+			local msg = owner:Nick() .. " [" .. owner:SteamID() .. "]" .. " tried to unfreeze a stack of " .. count .. " props!"
 			APG.notification(msg, APG.cfg["notificationLevel"].value, 2)
 		end
 	end

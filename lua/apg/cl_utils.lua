@@ -40,7 +40,7 @@ surface.CreateFont( "APG_element2_font", {
 	weight = 2900,
 } )
 
-local utils = {}
+local utils = utils or {}
 
 function utils.addBadEntity( class )
 	local found = false

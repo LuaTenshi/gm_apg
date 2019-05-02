@@ -44,7 +44,7 @@ function ENT:SetCollisionGroup( group )
 	return APG._SetCollisionGroup( self, group )
 end
 
-ENT._SetColor = ENT._SetColor or ENT.SetColor
+APG._SetColor = APG._SetColor or ENT.SetColor
 
 function ENT:SetColor( color, ... )
 	local color = color
@@ -62,7 +62,7 @@ function ENT:SetColor( color, ... )
 
 	assert( IsColor(color), "Invalid color passed to SetColor! \n This error prevents stuff from turning purple/pink." )
 
-	return self:_SetColor( color )
+	return APG._SetColor( self, color )
 end
 
 local PhysObj = FindMetaTable( "PhysObj" )
@@ -163,7 +163,7 @@ function APG.entGhost( ent, noCollide, enforce )
 		ent.APG_oldRenderMode = ent:GetRenderMode()
 		ent:SetRenderMode( RENDERMODE_TRANSALPHA )
 		ent:DrawShadow( false )
-		APG.log("DEBUG: noCollide set to " .. tostring(noCollide))
+
 		if noCollide then
 			ent:SetCollisionGroup( COLLISION_GROUP_WORLD )
 		else
@@ -241,15 +241,15 @@ APG.hookAdd( mod, "PhysgunPickup", "APG_makeGhost", function(ply, ent)
 	end
 end)
 
-APG.hookAdd( mod, "PlayerUnfrozeObject", "APG_unFreezeInteract", function (ply, ent, object)
+APG.hookAdd( mod, "PlayerUnfrozeObject", "APG_unFreezeInteract", function (ply, ent, pObj)
 	if not APG.canPhysGun( ent, ply ) then return end
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
 	if APG.cfg[ "alwaysFrozen" ].value then
-		APG.log("[APG-UNFREEZE]" .. ply:Nick() .. " unfroze " .. ent .. " but alwaysFrozen is enabled!")
+		APG.log("[APG-UNFREEZE]" .. ply:Nick() .. " unfroze " .. ent:GetName() .. " but alwaysFrozen is enabled!")
 		return false
 	 end -- Do not unfreeze if Always Frozen is enabled !
 	if ent:GetCollisionGroup( ) ~= COLLISION_GROUP_WORLD then
-		APG.log("[APG-UNFREEZE]" .. ply:Nick() .. " unfroze " .. ent)
+		APG.log("[APG-UNFREEZE]" .. ply:Nick() .. " unfroze " .. ent:GetName())
 		ent:SetCollisionGroup( COLLISION_GROUP_INTERACTIVE )
 	end
 end)
@@ -276,13 +276,14 @@ APG.hookAdd( mod, "PhysgunDrop", "APG_pGunDropUnghost", function( ply, ent )
 	end) -- Apply unghost to all constrained ents
 end)
 
-local function SafeSetCollisionGroup( ent, colgroup, pobj )
+local function SafeSetCollisionGroup( ent, colgroup, pObj )
 	-- If the entity is being held by a player or is ghosted abort.
 	if ent:IsPlayerHolding() then return end
 	if ent.APG_Ghosted then return end
 
-	if pobj then pobj:Sleep() end
+	if pObj then pObj:Sleep() end
 	ent:SetCollisionGroup(colgroup)
+	ent:CollisionRulesChanged()
 end
 
 APG.hookAdd( mod, "OnEntityCreated", "APG_noCollideOnCreate", function( ent )
@@ -290,7 +291,10 @@ APG.hookAdd( mod, "OnEntityCreated", "APG_noCollideOnCreate", function( ent )
 	if not IsValid( ent ) then return end
 	if ent:GetClass() == "gmod_hands" then return end -- Fix shadow glitch
 
-	timer.Simple( 0, function() APG.entGhost( ent ) end)
+	timer.Simple( 0, function()
+		APG.entGhost( ent )
+		APG.log(tostring(ent) .. " was spawned by " .. APG.getOwner(ent):Nick() .. " and was ghosted.")
+	end)
 	timer.Simple( 0, function()
 		local owner = APG.getOwner( ent )
 
@@ -307,9 +311,8 @@ APG.hookAdd( mod, "OnEntityCreated", "APG_noCollideOnCreate", function( ent )
 					ent.APG_Frozen = false
 					SafeSetCollisionGroup( ent, COLLISION_GROUP_INTERACTIVE )
 				end
-				pObj:RecheckCollisionFilter()
 
-			-- Need's a whitelist to allow specific mods
+			-- Need's a whitelist to allow specific models
 			-- else
 			-- 	if not APG.cfg["removeInvalidPhys"].value then return end
 			-- 	timer.Simple(0, function()
@@ -371,7 +374,7 @@ APG.hookAdd(mod, "APG.FadingDoorToggle", "APG_FadingDoor", function(ent, isFadin
 		local ply = APG.getOwner( ent )
 
 		if (IsValid(ply) and ply:IsPlayer() and not isFading) then
-			-- If you make a timer small enough it will call multiple times a second
+			-- Delay slightly, this is needed to wait for other things happen before it works.
 			timer.Simple(0.001, function()
 				checkDoor(ply, ent)
 			end)
