@@ -189,9 +189,9 @@ defaultSettings.cfg = {
 	  value = false,
 	  desc = "Allow prop killing"
 	},
-	developerLog = {
+	developerLogs = {
 		value = false,
-		desc = "Dev Logs (prints to everyone console)"
+		desc = "Dev Logs (prints everything like a notification)"
 	}
 }
 

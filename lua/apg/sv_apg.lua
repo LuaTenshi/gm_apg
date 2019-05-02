@@ -168,7 +168,7 @@ function APG.ghostThemAll( notification )
 	end
 	for _, v in next, ents.GetAll() do
 		if ( not APG.isBadEnt(v) ) or ( not APG.getOwner( v ) ) or APG.IsVehicle(v) or v.APG_Frozen then continue end
-		APG.entGhost( v, false, true )
+		APG.entGhost( v, true, false  )
 	end
 	-- TODO : Fancy notification system
 	if notification or APG.cfg["notificationLagFunc"].value then

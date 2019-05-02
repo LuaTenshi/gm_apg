@@ -88,6 +88,20 @@ end
 
 -- really basic, just so I don't have to constantly look back at the gmod server console
 function APG.log(msg)
-	if not APG.cfg["developerLog"].value then return end
-	MsgAll(msg .. "\n")
+	if not APG.cfg["developerLogs"].value then return end
+	local targets = {}
+	local new_targets = {}
+	for _, ply in next, player.GetHumans() do
+		if not IsValid(ply) then continue end
+		if not (ply:IsSuperAdmin()) then continue end
+		table.insert(new_targets, ply)
+	end
+	targets = new_targets
+	for _, v in next, targets do
+		if not IsValid(v) then continue end
+		net.Start("apg_notice_s2c")
+			net.WriteUInt(3, 3)
+			net.WriteString(msg)
+		net.Send(v)
+	end
 end

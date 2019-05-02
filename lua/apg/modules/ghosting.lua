@@ -40,6 +40,7 @@ function ENT:SetCollisionGroup( group )
 		group = COLLISION_GROUP_INTERACTIVE
 	end
 
+	APG.log("DEBUG: Collision Group set to " .. group)
 	return APG._SetCollisionGroup( self, group )
 end
 
@@ -116,10 +117,11 @@ function APG.isTrap( ent, fullscan )
 	end
 end
 
-function APG.entGhost( ent, enforce, noCollide )
+function APG.entGhost( ent, noCollide, enforce )
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
 	if APG.cfg["vehAntiGhost"].value and APG.IsVehicle( ent ) then return end
 	if ent.jailWall then return end
+	if type(noCollide) ~= "boolean" then noCollide = true end
 
 	if not ent.APG_Ghosted then
 		ent.FPPAntiSpamIsGhosted = nil -- Override FPP Ghosting.
@@ -161,7 +163,7 @@ function APG.entGhost( ent, enforce, noCollide )
 		ent.APG_oldRenderMode = ent:GetRenderMode()
 		ent:SetRenderMode( RENDERMODE_TRANSALPHA )
 		ent:DrawShadow( false )
-
+		APG.log("DEBUG: noCollide set to " .. tostring(noCollide))
 		if noCollide then
 			ent:SetCollisionGroup( COLLISION_GROUP_WORLD )
 		else
@@ -189,15 +191,14 @@ function APG.entUnGhost( ent, ply, failmsg )
 			local newColGroup = COLLISION_GROUP_INTERACTIVE
 
 			if ent.APG_oldCollisionGroup == COLLISION_GROUP_WORLD then
-				newColGroup = ent.APG_oldCollisionGroup
+				newCollisionGroup = ent.APG_oldCollisionGroup
 			elseif ent.APG_Frozen then
-				newColGroup = COLLISION_GROUP_NONE
+				newCollisionGroup = COLLISION_GROUP_NONE
 			end
 
-			ent:SetCollisionGroup( newColGroup )
+			ent:SetCollisionGroup( newCollisionGroup )
 
 			ent:CollisionRulesChanged()
-
 			return true
 		else
 			APG.notification( failmsg or "There is something in this prop!", ply, 1 )
@@ -284,7 +285,7 @@ local function SafeSetCollisionGroup( ent, colgroup, pobj )
 	ent:SetCollisionGroup(colgroup)
 end
 
-APG.hookAdd( mod, "OnEntityCreated", "APG_noColOnCreate", function( ent )
+APG.hookAdd( mod, "OnEntityCreated", "APG_noCollideOnCreate", function( ent )
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
 	if not IsValid( ent ) then return end
 	if ent:GetClass() == "gmod_hands" then return end -- Fix shadow glitch
@@ -356,7 +357,7 @@ local function checkDoor(ply, ent)
 				ent:SetCollisionGroup( COLLISION_GROUP_INTERACTIVE )
 
 				if IsValid(isTrap) then
-					APG.log("CantUnstuck " .. ply:GetName() .. " from " .. ent)
+					APG.log("Cant Unstuck " .. ply:GetName() .. " from " .. ent)
 					APG.notification( "Unable to unstuck objects from fading door!", ply, 1 )
 					APG.entGhost(ent)
 				end
