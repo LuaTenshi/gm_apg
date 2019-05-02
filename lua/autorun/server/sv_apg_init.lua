@@ -80,7 +80,6 @@ end
 ]]
 
 function APG.load( module )
-	APG.unLoad( module )
 	APG.modules[ module ] = true
 	include( "apg/modules/" .. module .. ".lua" )
 	print("[APG] " .. module .. " loaded.")
@@ -113,10 +112,19 @@ end
 
 function APG.reload( )
 	for k, v in next, APG.modules do
-		if APG.modules[k] == true then
+		if APG.modules[ k ] == true then
+			APG.unLoad( k )
 			APG.load( k )
 		else
 			APG.unLoad( k )
+		end
+	end
+end
+
+function APG.initialize()
+	for k, v in next, APG.modules do
+		if APG.modules[k] == true then
+			APG.load(k)
 		end
 	end
 end

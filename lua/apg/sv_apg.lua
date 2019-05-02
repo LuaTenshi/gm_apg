@@ -442,7 +442,8 @@ function APG.startDJob( job, content )
 end
 
 hook.Add("InitPostEntity", "APG_Load", function()
-	timer.Simple(10, function() -- 10 seconds, so in the future APG wont throw errors on start
-		APG.reload()
+	hook.Add("Think", "APG_Load", function()
+		APG.initialize()
+		hook.Remove("Think", "APG_Load")
 	end)
 end)

@@ -121,7 +121,6 @@ function APG.entGhost( ent, noCollide, enforce )
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
 	if APG.cfg["vehAntiGhost"].value and APG.IsVehicle( ent ) then return end
 	if ent.jailWall then return end
-	if type(noCollide) ~= "boolean" then noCollide = true end
 
 	if not ent.APG_Ghosted then
 		ent.FPPAntiSpamIsGhosted = nil -- Override FPP Ghosting.
