@@ -188,7 +188,7 @@ function APG.entUnGhost( ent, ply, failmsg )
 			ent:SetColor( ent.APG_oldColor or Color( 255, 255, 255, 255) )
 			ent.APG_oldColor = false
 
-			local newColGroup = COLLISION_GROUP_INTERACTIVE
+			local newCollisionGroup = COLLISION_GROUP_INTERACTIVE
 
 			if ent.APG_oldCollisionGroup == COLLISION_GROUP_WORLD then
 				newCollisionGroup = ent.APG_oldCollisionGroup
