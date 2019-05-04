@@ -18,10 +18,21 @@ local isentity = isentity
 
 function APG.canPhysGun( ent, ply )
 	if not IsValid(ent) then return false end -- The entity isn't valid, don't pickup.
-	if ply.APG_CantPickup then return false end -- Is APG blocking the pickup?
-	if ent.CPPICanPhysgun then return ent:CPPICanPhysgun(ply) end -- Let CPPI handle things from here.
+	
+	if ent.PhysgunDisabled == false then 
+		return false
+	end -- Check if the entity is physgun disabled.
 
-	return not ent.PhysgunDisabled -- By default everything can be picked up, unless it is PhysgunDisabled.
+	if ply.APG_CantPickup == true then
+		ply:ConCommand("-attack") -- Tell the player to stop physgunning.
+		return false 
+	end -- Is APG blocking the pickup?
+
+	if ent.CPPICanPhysgun then 
+		return ent:CPPICanPhysgun(ply)
+	end -- Let CPPI handle things from here.
+
+	return false -- If everything fails we probably shouldn't be picking this up.
 end
 
 	--[[
@@ -145,7 +156,7 @@ function APG.IsVehicle(v, basic)
 	return APG.IsVehicle(parent, true)
 end
 
-function APG.cleanUp( mode, notification, specific )
+function APG.cleanUp( mode, notify, specific )
 	mode = mode or "unfrozen"
 	for _, v in next, specific or ents.GetAll() do
 		APG.killVelocity(v,false)
@@ -156,13 +167,13 @@ function APG.cleanUp( mode, notification, specific )
 			v:Remove()
 		end
 	end
-	-- TODO : Fancy notification system
-	if notification or APG.cfg["notificationLagFunc"].value then
+	-- TODO : Fancy notify system
+	if notify or APG.cfg["notificationLagFunc"].value then
 		APG.notification("Cleaned up (mode: " .. mode .. ")", APG.cfg["notificationLevel"].value, 2)
 	end
 end
 
-function APG.ghostThemAll( notification )
+function APG.ghostThemAll( notify, callback )
 	if not APG.modules[ "ghosting" ] then
 		return APG.notification("[APG] Warning: Tried to ghost props but ghosting is disabled!", 1, -1, true)
 	end
@@ -170,20 +181,28 @@ function APG.ghostThemAll( notification )
 		if ( not APG.isBadEnt(v) ) or ( not APG.getOwner( v ) ) or APG.IsVehicle(v) or v.APG_Frozen then continue end
 		APG.entGhost( v, true, false  )
 	end
-	-- TODO : Fancy notification system
-	if notification or APG.cfg["notificationLagFunc"].value then
+	-- TODO : Fancy notify system
+	if notify or APG.cfg["notificationLagFunc"].value then
 	  APG.notification("Unfrozen props ghosted!", APG.cfg["notificationLevel"].value, 1)
+	end
+
+	if isfunction(callback) then
+		callback()
 	end
 end
 
-function APG.freezeProps( notification )
+function APG.freezeProps( notify, callback )
 	for _, v in next, ents.GetAll() do
 		if not APG.isBadEnt(v) or not APG.getOwner( v ) then continue end
 		APG.freezeIt( v )
 	end
-	-- TODO : Fancy notification system
-	if notification or APG.cfg["notificationLagFunc"].value then
+	-- TODO : Fancy notify system
+	if notify or APG.cfg["notificationLagFunc"].value then
 	  APG.notification("Props frozen", APG.cfg["notificationLevel"].value, 0)
+	end
+
+	if isfunction(callback) then
+		callback()
 	end
 end
 
@@ -205,7 +224,7 @@ local function GetPhysenv()
 	return {con = con, env = env}
 end
 
-function APG.smartCleanup( notification )
+function APG.smartCleanup( notify, callback )
 	local defaults = GetPhysenv()
 	local phys = table.Copy(defaults.env)
 
@@ -267,8 +286,13 @@ function APG.smartCleanup( notification )
 		for k,v in next, defaults.con do
 			RunConsoleCommand(k, v)
 		end
+
 		physenv.SetPerformanceSettings(defaults.env)
 		hook.Remove("PlayerSpawnObject", "APG_smartCleanup")
+
+		if isfunction(callback) then
+			callback()
+		end
 	end)
 end
 
