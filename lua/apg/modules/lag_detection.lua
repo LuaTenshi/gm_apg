@@ -19,6 +19,7 @@
 
 ]]--------------------------------------------
 local mod = "lag_detection"
+local table = table
 
 --[[--------------------
 	Lag fixing functions
@@ -34,107 +35,143 @@ local lagFix = {
 }
 
 --[[--------------------
-	Utils
-]]----------------------
-function APG.process( tab )
-	local sum = 0
-	local max = 0
-	for k, v in pairs( tab ) do
-		sum = sum + v
-		if v > max then
-			max = v
-		end
-	end
-	return sum / (#tab) , max
-end
-
-hook.Remove( "APG_lagDetected", "APG_RUN_lagDetected") -- Sometimes, I dream about cheese.
-hook.Add( "APG_lagDetected", "APG_RUN_lagDetected", function()
-	if not APG then return end
-	local func = APG.cfg[ "lagFunc" ].value
-	if not lagFix[ func ] then return end
-	lagFix[ func ]()
-end)
-
---[[--------------------
-	To replace in UI
-]]----------------------
-concommand.Add( "APG_showLag", function(ply, cmd, arg)
-	if IsValid( ply ) and not ply:IsAdmin() then return end
-	local lastShow = SysTime()
-	local values = {}
-	local time = arg[ 1 ] or 30
-	APG.notification( "[APG] Processing : please wait " .. time .. " seconds", ply, -1, true)
-	hook.Add("Think","APG_showLag",function()
-		local curTime = SysTime()
-		local diff = curTime - lastShow
-		table.insert(values, diff)
-		lastShow = curTime
-	end)
-	timer.Simple( time , function()
-		hook.Remove( "Think", "APG_showLag" )
-		local avg, max = APG.process( values )
-		values = {}
-		APG.notification( "[APG] Avg : " .. avg .. " | Max : " .. max, ply, -1, true)
-	end)
-end)
-
---[[--------------------
 	Lag detection vars
 ]]----------------------
-local trigValue = 10
-local tickTable = {}
-local delta, curAvg, lagCount = 0, 0, 0
 
+local lastTick = 0
+local tickDelta = 0
+local tickRate = 0
 
-local pause = false
-local lastThink = SysTime()
+local lagCount = 0
+local lagThreshold = math.huge
 
-function APG.resetLag()
-	trigValue = 10
-	tickTable = {}
-	delta, curAvg, lagCount = 0, 0, 0
-	pause = false
-	lastThink = SysTime()
+local processHault = false
+local processFunc = false
+local processExecs = 0
+
+local sampleData = {}
+local sampleCount = 0
+
+local function addSample( data )
+	local index = (sampleCount%66)+1
+	local data = math.floor(tonumber(data))
+
+	sampleCount = sampleCount + 1
+	if sampleCount >= 66 then
+		sampleCount = 0
+	end
+
+	table.insert(sampleData, index, data)
 end
 
-APG.timerAdd( mod, "APG_process", 5, 0, function()
-	if not APG.modules[ mod ] then return end
+function APG.resetLag(dontResetData)
+	lastTick = 0
+	tickDelta = 0
 
-	if #tickTable < 12 or delta < trigValue then -- save every values the first minute
-		table.insert( tickTable, delta )
-		if #tickTable > 60 then
-			table.remove(tickTable, 1) -- it will take 300 seconds to fullfill the table.
-		end
+	lagCount = 0
+	lagThreshold = tickRate
 
-		curAvg = APG.process( tickTable )
-		trigValue = curAvg * ( 1 + APG.cfg[ "lagTrigger" ].value / 100 )
+	processHault = false
+	processFunc = false
+	processExecs = 0
+
+	sampleData = {}
+	sampleCount = 0
+end
+
+function APG.calculateLagAverage()
+	local count = 0
+	local total = 0
+	local sampleData = sampleData
+
+	for _, v in next, sampleData do
+		total = total + v
+		count = count + 1
 	end
+
+	if count < 20 then
+		return false -- Not enough data, yet.
+	end
+
+	return (total/count)
+end
+
+hook.Add("Think", "APG_initLagDetection", function()
+	tickRate = ( 1 / engine.TickInterval() )
+	lagThreshold = tickRate
+	hook.Remove("Think", "APG_initLagDetection")
 end)
 
-APG.hookAdd( mod, "Think", "APG_detectLag", function()
+APG.timerAdd( mod, "APG_process", 3, 0, function()
 	if not APG.modules[ mod ] then return end
 
-	local curTime = SysTime()
-	delta = curTime - lastThink
-	if delta >= trigValue then
+	if tickDelta >= lagThreshold then
+		addSample(tickDelta)
+	end
+
+	local average = APG.calculateLagAverage()
+
+	if average then
+		lagThreshold = average * ( 1 + APG.cfg[ "lagTrigger" ].value / 100 )
+	end
+
+	processExecs = 0
+end)
+
+APG.hookAdd( mod, "Think", "APG_lagDetection", function()
+	if not APG.modules[ mod ] then return end
+
+	local sysTime = SysTime()
+	tickDelta = sysTime - lastTick
+
+	if lagThreshold > tickRate and tickDelta >= lagThreshold then
 		lagCount = lagCount + 1
-		if (lagCount >= APG.cfg[ "lagsCount" ].value) or ( delta > APG.cfg[ "bigLag" ].value ) then
+		if (lagCount >= APG.cfg[ "lagsCount" ].value) or ( tickDelta > APG.cfg[ "bigLag" ].value ) then
 			lagCount = 0
-			if not pause then
-				pause = true
-				timer.Simple( APG.cfg["lagFuncTime"].value, function() pause = false end)
+			if processHault == false and processFunc == false then
+				processHault = true
+
+				timer.Simple(APG.cfg["lagFuncTime"].value, function()
+					processHault = false
+				end)
 
 				APG.notification( "WARNING LAG DETECTED : Running lag fix function!", APG.cfg["notificationLevel"].value, 2 )
-
-					hook.Run( "APG_lagDetected" )
-				end
+				hook.Run( "APG_lagDetected" )
+			else
+				lagCount = lagCount > 0 and (lagCount - 0.5) or 0
 			end
-		else
-			lagCount = lagCount > 0 and (lagCount - 0.5) or 0
 		end
-		lastThink = curTime
+	end
+
+	lastTick = sysTime
+end)
+
+--[[--------------------
+	Utils
+]]----------------------
+
+hook.Remove( "APG_lagDetected", "main") -- Sometimes, I dream about cheese.
+hook.Add( "APG_lagDetected", "main", function()
+	if not APG then return end
+
+	local funcName = APG.cfg[ "lagFunc" ].value
+	local func = lagFix[ funcName ]
+
+	if not func then return end
+
+	processFunc = true
+
+	func(function()
+		processFunc = false
+		processExecs = processExecs + 1
 	end)
+
+	if processExecs > 3 then
+		-- If the lag cleanup process runs more then 3 times in 3 seconds, then
+		-- reset our data.
+		APG.resetLag()
+	end
+end)
 
 --[[------------------------------------------
 	Load hooks and timers
