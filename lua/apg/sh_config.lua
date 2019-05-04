@@ -63,8 +63,8 @@ defaultSettings.cfg = {
 		desc = "Entities to ghost/control/secure (true if exact name, false if it is a pattern"},
 
 	alwaysFrozen = {
-	  value = false,
-	  desc = "Set to true to auto freeze props on physgun drop (aka APA_FreezeOnDrop)"
+	  value = true,
+	  desc = "Set to true to auto freeze props on physgun drop (aka APG_FreezeOnDrop)"
 	},
 
 	--[[----------
@@ -149,11 +149,11 @@ defaultSettings.cfg = {
 
 	--[[ Props related ]]--
 	blockPhysgunReload = {
-	  value = false,
+	  value = true,
 	  desc = "Block players from using physgun reload"
 	},
 	blockContraptionMove = {
-	  value = false,
+	  value = true,
 	  desc = "Block players from moving contraptions"
 	},
 	autoFreeze = {
@@ -191,7 +191,7 @@ defaultSettings.cfg = {
 	},
 	developerLogs = {
 		value = false,
-		desc = "Dev Logs (prints everything like a notification)"
+		desc = "Dev Logs (prints stuff)"
 	}
 }
 
