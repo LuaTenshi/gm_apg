@@ -1,6 +1,6 @@
 --[[------------------------------------------
 	====================================================================================
-				/!\ READ ME /!\    /!\ READ ME /!\    /!\ READ ME /!\
+				/!\ READ ME /!\		/!\ READ ME /!\		/!\ READ ME /!\
 	====================================================================================
 
 	This file is the default config file.
@@ -38,7 +38,7 @@ end
 ]]--------------------------------------------
 
 local defaultSettings = {}
-defaultSettings.modules = { -- Set to true to enable and false to disable  module
+defaultSettings.modules = { -- Set to true to enable and false to disable	module
 	["ghosting"] = true,
 	["stack_detection"] = true,
 	["lag_detection"] = true,
@@ -63,142 +63,183 @@ defaultSettings.cfg = {
 		desc = "Entities to ghost/control/secure (true if exact name, false if it is a pattern"},
 
 	alwaysFrozen = {
-	  value = true,
-	  desc = "Set to true to auto freeze props on physgun drop (aka APG_FreezeOnDrop)"
+		value = true,
+		desc = "Set to true to auto freeze props on physgun drop (aka APG_FreezeOnDrop)"
 	},
 
 	--[[----------
 		Stack detection module
 	]]------------
 	stackMax = {
-	  value = 15,
-	  desc = "Max amount of entities stacked in a small area"
-	},
-	stackArea = {
-	  value = 15,
-	  desc = "Sphere radius for stack detection (gmod units)"
-	},
-	fadingDoorStackMax = {
-		value = 5,
-		desc = "Maximum amount of fading doors that can be stacked in area"
-	},
-	fadingDoorStackNotify = {
-		value = false,
-		desc = "Notify players when their fading doors were removed"
+		value = 15,
+		desc = "Max amount of entities stacked in a small area"
 	},
 
+	stackArea = {
+		value = 15,
+		desc = "Sphere radius for stack detection (gmod units)"
+	},
 
 	--[[----------
 		Lag detection module
 	]]------------
 	lagTrigger = {
-	  value = 75,
-	  desc = "[Default: 75%] Differential threshold between current lag and average lag."
+		value = 75,
+		desc = "[Default: 75%] Differential threshold between current lag and average lag."
 	},
+
 	lagsCount = {
-	  value = 8,
-	  desc = "Number of consectuives laggy frames in order to run a cleanup."
+		value = 8,
+		desc = "Number of consectuives laggy frames in order to run a cleanup."
 	},
+
 	bigLag = {
-	  value = 2,
-	  desc = "Maximum time (seconds) between 2 frames to trigger a cleanup"
+		value = 2,
+		desc = "Maximum time (seconds) between 2 frames to trigger a cleanup"
 	},
+
 	lagFunc = {
-	  value = "ghost_unfrozen",
-	  desc = "Function ran on lag detected, see APG_lagFuncs."
+		value = "ghost_unfrozen",
+		desc = "Function ran on lag detected, see APG_lagFuncs."
 	},
+
 	lagFuncTime = {
-	  value = 20,
-	  desc = "Time (seconds) between 2 anti lag function (avoid spam)"
+		value = 20,
+		desc = "Time (seconds) between 2 anti lag function (avoid spam)"
 	},
 
 	--[[----------
 		MISC
 	]]------------
 
-	--[[ Notifications ]] --
+	--[[ notifications ]] --
+
 	notifySounds = {
-	  value = false, -- Might make it where certain ones run sound
-	  desc = "When notifys run do you want the sounds to play?"
+		value = false, -- Might make it where certain ones run sound
+		desc = "When notifications run do you want the sounds to play?"
 	},
+
 	notifyLevel = {
-	  value = 2,
-	  desc = "notify : 0 - Disabled, 1 - Everyone, 2 - Staff only (set in notifyRanks), 3 - Superadmins"
+		value = 2,
+		desc = "notification : 0 - Disabled, 1 - Everyone, 2 - Staff only (set in notifyRanks), 3 - Superadmins"
 	},
+
 	notifyLagFunc = {
-	  value = false,
-	  desc = "Do you want the notifyLevel to see the lagFunc that ran? (refer to APG_lagFuncs)"
+		value = false,
+		desc = "Do you want the notifyLevel to see the lagFunc that ran? (refer to APG_lagFuncs)"
 	},
+
 	notifyULibInheritance = {
-	  value = true,
-	  desc = "Do you want to use inheritance for notificatioRanks? (only works with ULIB/ULX)"
+		value = true,
+		desc = "Do you want to use inheritance for notifyRanks? (only works with ULIB/ULX)"
 	},
+
 	notifyRanks = {
-	  value = { "trialmod", "moderator", "admin", "superadmin", "owner" },
-	  desc = "The ranks that you want to see the notify" -- If you have notifyULibInheritance you only need to do the lowest rank(s)
+		value = { "trialmod", "moderator", "admin", "superadmin", "owner" },
+		desc = "The ranks that you want to see the notification" -- If you have notifyULibInheritance you only need to do the lowest rank(s)
 	},
 
 	--[[ Vehicles ]]--
+
 	vehDamage = {
-	  value = false,
-	  desc = "True to disable vehicles damages, false to enable."
+		value = false,
+		desc = "True to disable vehicles damages, false to enable."
 	},
+
 	vehNoCollide = {
-	  value = false,
-	  desc = "True to disable collisions between vehicles and players"
+		value = false,
+		desc = "True to disable collisions between vehicles and players"
 	},
+
 	vehIncludeWAC = {
-	  value = true,
-	  desc = "Check for WAC vehicles."
+		value = true,
+		desc = "Check for WAC vehicles."
 	},
+
 	vehAntiGhost = {
 		value = false,
 		desc = "Toggle vehicle ghosting"
 	},
 
+	--[[ Tool Control ]]--
+	blockToolSpam = {
+		value = true,
+		desc = "Block players from spamming the toolgun."
+	},
+
+	blockToolRate = {
+		value = 2,
+		desc = "How fast can we use the toolgun before it gets blocked? (Clicks per second)"
+	},
+
+	blockToolWorld = {
+		value = true,
+		desc = "Prevent using the toolgun on the world."
+	},
+
+	blockToolUnfreeze = {
+		value = true,
+		desc = "Prevent the toolgun from unfreezing props."
+	},
+
+	checkTooledEnts = {
+		value = true,
+		desc = "Review entities near tool use."
+	}
+
 	--[[ Props related ]]--
+
 	blockPhysgunReload = {
-	  value = true,
-	  desc = "Block players from using physgun reload"
+		value = true,
+		desc = "Block players from using physgun reload"
 	},
+
 	blockContraptionMove = {
-	  value = true,
-	  desc = "Block players from moving contraptions"
+		value = true,
+		desc = "Block players from moving contraptions"
 	},
+
 	autoFreeze = {
-	  value = false,
-	  desc = "Freeze every unfrozen prop each X seconds"
+		value = false,
+		desc = "Freeze every unfrozen prop each X seconds"
 	},
+
 	autoFreezeTime = {
-	  value = 120,
-	  desc = "Auto freeze timer (seconds)"
+		value = 120,
+		desc = "Auto freeze timer (seconds)"
 	},
+
 	removeInvalidPhys = {
 		value = true,
 		desc = "Remove props that don't have a valid physics object?"
 	},
 
 	fadingDoorHook = {
-	  value = true,
-	  desc = "Inject custom hooks into Fading Doors"
+		value = true,
+		desc = "Inject custom hooks into Fading Doors"
 	},
+
 	fadingDoorGhosting = {
-	  value = true,
-	  desc = "Activate fading door ghosting"
+		value = true,
+		desc = "Activate fading door ghosting"
 	},
+
 	sleepyPhys = {
-	  value = false,
-	  desc = "Activate FRZR9K (Sleepy Physics)"
+		value = false,
+		desc = "Activate FRZR9K (Sleepy Physics)"
 	},
+
 	sleepyPhysHook = {
-	  value = false,
-	  desc = "Hook FRZR9K into collision (Experimental)"
+		value = false,
+		desc = "Hook FRZR9K into collision (Experimental)"
 	},
+
 	allowPK = {
-	  value = false,
-	  desc = "Allow prop killing"
+		value = false,
+		desc = "Allow prop killing"
 	},
-	developerDebug = {
+
+	developerLogs = {
 		value = false,
 		desc = "Dev Logs (prints stuff)"
 	}
