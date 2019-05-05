@@ -38,7 +38,7 @@ end
 ]]--------------------------------------------
 
 local defaultSettings = {}
-defaultSettings.modules = { -- Set to true to enable and false to disable	module
+defaultSettings.modules = { -- Set to true to enable and false to disable module.
 	["ghosting"] = true,
 	["stack_detection"] = true,
 	["lag_detection"] = true,
@@ -104,7 +104,7 @@ defaultSettings.cfg = {
 	},
 
 	lagFuncTime = {
-		value = 20,
+		value = 8,
 		desc = "Time (seconds) between 2 anti lag function (avoid spam)"
 	},
 
