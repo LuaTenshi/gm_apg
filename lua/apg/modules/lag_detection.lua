@@ -141,15 +141,13 @@ APG.hookAdd( mod, "Tick", "APG_lagDetection", function()
 
 			end
 
-		else
-
-			lagCount = lagCount - 0.5
-			if lagCount < 0 then
-				lagCount = 0
-			end
-
 		end
 
+	else
+		lagCount = lagCount - 0.5
+		if lagCount < 0 then
+			lagCount = 0
+		end
 	end
 
 	lastTick = sysTime
