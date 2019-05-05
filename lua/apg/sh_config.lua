@@ -170,13 +170,19 @@ defaultSettings.cfg = {
 	},
 
 	--[[ Tool Control ]]--
+	
+	checkCanTool = {
+		value = true,
+		desc = "Should tools be blocked on APG_CantPickup?"
+	},
+
 	blockToolSpam = {
 		value = true,
 		desc = "Block players from spamming the toolgun."
 	},
 
 	blockToolRate = {
-		value = 2,
+		value = 3,
 		desc = "How fast can we use the toolgun before it gets blocked? (Clicks per second)"
 	},
 
