@@ -2,23 +2,23 @@ APG_panels = APG_panels or {}
 
 local utils = include( "cl_utils.lua" ) or { }
 
-local function showNotice(notificationLevel, notificationMessage)
-	if string.Trim(notificationMessage) == "" then return end
-	icon = notificationLevel == 0 and NOTIFY_GENERIC or notificationLevel == 1 and NOTIFY_CLEANUP or notificationLevel == 2 and NOTIFY_ERROR
+local function showNotice(notifyLevel, notifyMessage)
+	if string.Trim(notifyMessage) == "" then return end
+	icon = notifyLevel == 0 and NOTIFY_GENERIC or notifyLevel == 1 and NOTIFY_CLEANUP or notifyLevel == 2 and NOTIFY_ERROR
 
-	notification.AddLegacy(notificationMessage, icon, 3 + (notificationLevel * 3))
+	notification.AddLegacy(notifyMessage, icon, 3 + (notifyLevel * 3))
 
-	if APG.cfg[ "notificationSounds" ].value then
-		surface.PlaySound(notificationLevel == 1 and "buttons/button10.wav" or notificationLevel == 2 and "ambient/alarms/klaxon1.wav" or "buttons/lightswitch2.wav") -- Maybe let the player choose the sound?
+	if APG.cfg[ "notifySounds" ].value then
+		surface.PlaySound(notifyLevel == 1 and "buttons/button10.wav" or notifyLevel == 2 and "ambient/alarms/klaxon1.wav" or "buttons/lightswitch2.wav") -- Maybe let the player choose the sound?
 	end
 
-	MsgC( notificationLevel == 0 and Color( 0, 255, 0 ) or Color( 255, 191, 0 ), "[APG] ", Color( 255, 255, 255 ), notificationMessage,"\n")
+	MsgC( notifyLevel == 0 and Color( 0, 255, 0 ) or Color( 255, 191, 0 ), "[APG] ", Color( 255, 255, 255 ), notifyMessage,"\n")
 end
 
 net.Receive( "apg_notice_s2c", function()
-	local notificationLevel = net.ReadUInt( 3 )
-	local notificationMessage = net.ReadString()
-	showNotice(notificationLevel, notificationMessage)
+	local notifyLevel = net.ReadUInt( 3 )
+	local notifyMessage = net.ReadString()
+	showNotice(notifyLevel, notifyMessage)
 end)
 
 local function APGBuildStackPanel()
@@ -58,9 +58,9 @@ local function APGBuildNotificationPanel()
 	local panel = APG_panels[ "notification" ]
 	panel.Paint = function( i, w, h ) end
 
-	utils.switch( panel, 0, 40, 395, 20, "Notification Sounds", "notificationSounds" )
-	utils.numSlider( panel, 0, 75, 500, 20, "Notification Level", "notificationLevel", 1, 3, 0 )
-	utils.switch( panel, 0, 110, 395, 20, "Do you want to show which lag function ran?", "notificationLagFunc" )
+	utils.switch( panel, 0, 40, 395, 20, "Notification Sounds", "notifySounds" )
+	utils.numSlider( panel, 0, 75, 500, 20, "Notification Level", "notifyLevel", 1, 3, 0 )
+	utils.switch( panel, 0, 110, 395, 20, "Do you want to show which lag function ran?", "notifyLagFunc" )
 	utils.switch( panel, 0, 145, 395, 20, "Developer logs (shows a notification, is spammy)", "developerDebug" )
 end
 
@@ -399,6 +399,16 @@ properties.Add( "apgoptions", {
 			callback = function() self:APGcmd( ent, "ghost" ) end,
 		})
 
+		addoption( "Get Entity Name", {
+			icon = "icon16/tick.png",
+			callback = function() self:APGcmd( ent, "getentname" ) end,
+		})
+		
+		addoption( "laghook", {
+			icon = "icon16/tick.png",
+			callback = function() self:APGcmd( ent, "laghook" ) end,
+		})
+
 	end,
 	Action = function( self, ent ) end,
 	APGcmd = function( self, ent, cmd )
@@ -412,6 +422,8 @@ properties.Add( "apgoptions", {
 			else
 			   showNotice(0, "\nOops, that's not a Player!")
 			end
+		elseif cmd == "getentname" then
+			showNotice(0, ent:GetClass())
 		elseif IsValid( ent ) and ent.EntIndex() then
 			net.Start( "apg_context_c2s" )
 				net.WriteString( cmd )

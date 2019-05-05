@@ -79,6 +79,14 @@ defaultSettings.cfg = {
 		value = 15,
 		desc = "Sphere radius for stack detection (gmod units)"
 	},
+	fadingDoorStackMax = {
+		value = 5,
+		desc = "Maximum amount of fading doors that can be stacked in stackArea."
+	},
+	fadingDoorStackNotify = {
+		value = false,
+		desc = "Notify the players when their fading doors were removed"
+	},
 
 	--[[----------
 		Lag detection module
@@ -112,7 +120,7 @@ defaultSettings.cfg = {
 		MISC
 	]]------------
 
-	--[[ notifications ]] --
+	--[[ Notifications ]] --
 
 	notifySounds = {
 		value = false, -- Might make it where certain ones run sound
@@ -185,7 +193,7 @@ defaultSettings.cfg = {
 	checkTooledEnts = {
 		value = true,
 		desc = "Review entities near tool use."
-	}
+	},
 
 	--[[ Props related ]]--
 
