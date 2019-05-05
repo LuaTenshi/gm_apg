@@ -78,6 +78,15 @@ defaultSettings.cfg = {
 	  value = 15,
 	  desc = "Sphere radius for stack detection (gmod units)"
 	},
+	fadingDoorStackMax = {
+		value = 5,
+		desc = "Maximum amount of fading doors that can be stacked in area"
+	},
+	fadingDoorStackNotify = {
+		value = false,
+		desc = "Notify players when their fading doors were removed"
+	},
+
 
 	--[[----------
 		Lag detection module
@@ -108,25 +117,25 @@ defaultSettings.cfg = {
 	]]------------
 
 	--[[ Notifications ]] --
-	notificationSounds = {
+	notifySounds = {
 	  value = false, -- Might make it where certain ones run sound
-	  desc = "When notifications run do you want the sounds to play?"
+	  desc = "When notifys run do you want the sounds to play?"
 	},
-	notificationLevel = {
+	notifyLevel = {
 	  value = 2,
-	  desc = "notification : 0 - Disabled, 1 - Everyone, 2 - Staff only (set in notificationRanks), 3 - Superadmins"
+	  desc = "notify : 0 - Disabled, 1 - Everyone, 2 - Staff only (set in notifyRanks), 3 - Superadmins"
 	},
-	notificationLagFunc = {
+	notifyLagFunc = {
 	  value = false,
-	  desc = "Do you want the notificationLevel to see the lagFunc that ran? (refer to APG_lagFuncs)"
+	  desc = "Do you want the notifyLevel to see the lagFunc that ran? (refer to APG_lagFuncs)"
 	},
-	notificationULibInheritance = {
+	notifyULibInheritance = {
 	  value = true,
 	  desc = "Do you want to use inheritance for notificatioRanks? (only works with ULIB/ULX)"
 	},
-	notificationRanks = {
+	notifyRanks = {
 	  value = { "trialmod", "moderator", "admin", "superadmin", "owner" },
-	  desc = "The ranks that you want to see the notification" -- If you have notificationULibInheritance you only need to do the lowest rank(s)
+	  desc = "The ranks that you want to see the notify" -- If you have notifyULibInheritance you only need to do the lowest rank(s)
 	},
 
 	--[[ Vehicles ]]--
@@ -189,7 +198,7 @@ defaultSettings.cfg = {
 	  value = false,
 	  desc = "Allow prop killing"
 	},
-	developerLogs = {
+	developerDebug = {
 		value = false,
 		desc = "Dev Logs (prints stuff)"
 	}

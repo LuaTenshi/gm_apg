@@ -125,7 +125,7 @@ local function contextCMD(_,ply)
 		APG.notification((count or 0) .. (count == 1 and " Entity is" or " Entities are") .. " now Sleeping", ply)
 	elseif cmd == "ghost" then
 		APG.entGhost(ent)
-		APG.notification(ent:Name() .. " was ghosted.")
+		APG.notification(ent:GetName() .. " was ghosted.")
 	end
 
 	if cmd == "addghost" or cmd == "remghost" then

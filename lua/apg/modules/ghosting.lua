@@ -40,7 +40,7 @@ function ENT:SetCollisionGroup( group )
 		group = COLLISION_GROUP_INTERACTIVE
 	end
 
-	APG.log("DEBUG: Collision Group set to " .. group)
+	APG.debug("Collision Group set to " .. group .. " on " .. tostring(self))
 	return APG._SetCollisionGroup( self, group )
 end
 
@@ -53,15 +53,15 @@ function ENT:SetColor( color, ... )
 	if type(color) == "number" then
 		color = Color(color, select(1, ...) or 255, select(2, ...) or 255, select(3, ...) or 255)
 	elseif type(color) == "table" and not IsColor(color) then
-		r = color.r or color[1] or 255
-		g = color.g or color[2] or 255
-		b = color.b or color[3] or 255
-		a = color.a or color[4] or 255
+		r = color.r or 255
+		g = color.g or 255
+		b = color.b or 255
+		a = color.a or 255
 		color = Color(r, g, b, a)
 	end
 
 	assert( IsColor(color), "Invalid color passed to SetColor! \n This error prevents stuff from turning purple/pink." )
-
+	APG.debug(tostring(self) .. " was set to color " .. tostring(color))
 	return APG._SetColor( self, color )
 end
 
@@ -169,6 +169,8 @@ function APG.entGhost( ent, noCollide, enforce )
 			ent:SetCollisionGroup( COLLISION_GROUP_DEBRIS_TRIGGER )
 		end
 
+		APG.debug(tostring(ent) .. " was ghosted!")
+
 		ent:CollisionRulesChanged()
 	end
 end
@@ -224,7 +226,7 @@ end
 ]]--------------------------------------------
 
 APG.hookAdd( mod, "PhysgunPickup", "APG_makeGhost", function(ply, ent)
-	if not APG.canPhysGun( ent, ply ) then return end
+	if not APG.canPhysGun( ent, ply, "APG_makeGhost" ) then return end
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
 
 	ent.APG_Picked = true
@@ -241,14 +243,14 @@ APG.hookAdd( mod, "PhysgunPickup", "APG_makeGhost", function(ply, ent)
 end)
 
 APG.hookAdd( mod, "PlayerUnfrozeObject", "APG_unFreezeInteract", function (ply, ent, pObj)
-	if not APG.canPhysGun( ent, ply ) then return end
+	if not APG.canPhysGun( ent, ply, "APG_unFreezeInteract" ) then return end
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
 	if APG.cfg[ "alwaysFrozen" ].value then
-		APG.log("[APG-UNFREEZE]" .. ply:Nick() .. " unfroze " .. ent:GetName() .. " but alwaysFrozen is enabled!")
+		APG.debug("[APG-UNFREEZE]" .. ply:Nick() .. " unfroze " .. ent:GetName() .. " but alwaysFrozen is enabled!")
 		return false
 	 end -- Do not unfreeze if Always Frozen is enabled !
 	if ent:GetCollisionGroup( ) ~= COLLISION_GROUP_WORLD then
-		APG.log("[APG-UNFREEZE]" .. ply:Nick() .. " unfroze " .. ent:GetName())
+		APG.debug("[APG-UNFREEZE]" .. ply:Nick() .. " unfroze " .. ent:GetName())
 		ent:SetCollisionGroup( COLLISION_GROUP_INTERACTIVE )
 	end
 end)
@@ -256,6 +258,7 @@ end)
 APG.dJobRegister( "unghost", 0.1, 50, function( ent )
 	if IsValid(ent) then
 		APG.entUnGhost( ent )
+		APG.debug(tostring(ent) .. " was unghosted in dJobRegister.")
 	end
 end)
 
@@ -292,7 +295,7 @@ APG.hookAdd( mod, "OnEntityCreated", "APG_noCollideOnCreate", function( ent )
 
 	timer.Simple( 0, function()
 		APG.entGhost( ent )
-		APG.log(tostring(ent) .. " was spawned by " .. APG.getOwner(ent):Nick() .. " and was ghosted.")
+		APG.debug(tostring(ent) .. " was spawned by " .. APG.getOwner(ent):Nick() .. " and was ghosted.")
 	end)
 	timer.Simple( 0, function()
 		local owner = APG.getOwner( ent )
@@ -316,7 +319,7 @@ APG.hookAdd( mod, "OnEntityCreated", "APG_noCollideOnCreate", function( ent )
 			-- 	if not APG.cfg["removeInvalidPhys"].value then return end
 			-- 	timer.Simple(0, function()
 			-- 		ent:Remove()
-			-- 		APG.log(tostring(ent) .. " spawned by " .. owner:Nick() .. " doesn't have physics!")
+			-- 		APG.debug(tostring(ent) .. " spawned by " .. owner:Nick() .. " doesn't have physics!")
 			-- 	end)
 			end
 		end
@@ -359,7 +362,7 @@ local function checkDoor(ply, ent)
 				ent:SetCollisionGroup( COLLISION_GROUP_INTERACTIVE )
 
 				if IsValid(isTrap) then
-					APG.log("Cant Unstuck " .. ply:GetName() .. " from " .. ent)
+					APG.debug("Cant Unstuck " .. ply:GetName() .. " from " .. ent)
 					APG.notification( "Unable to unstuck objects from fading door!", ply, 1 )
 					APG.entGhost(ent)
 				end

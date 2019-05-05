@@ -18,8 +18,7 @@ local isentity = isentity
 
 function APG.canPhysGun( ent, ply )
 	if not IsValid(ent) then return false end -- The entity isn't valid, don't pickup.
-	
-	if ent.PhysgunDisabled == false then 
+	if ent.PhysgunDisabled == false then
 		return false
 	end -- Check if the entity is physgun disabled.
 
@@ -168,22 +167,22 @@ function APG.cleanUp( mode, notify, specific )
 		end
 	end
 	-- TODO : Fancy notify system
-	if notify or APG.cfg["notificationLagFunc"].value then
-		APG.notification("Cleaned up (mode: " .. mode .. ")", APG.cfg["notificationLevel"].value, 2)
+	if notify or APG.cfg["notifyLagFunc"].value then
+		APG.notification("Cleaned up (mode: " .. mode .. ")", APG.cfg["notifyLevel"].value, 2)
 	end
 end
 
 function APG.ghostThemAll( notify, callback )
 	if not APG.modules[ "ghosting" ] then
-		return APG.notification("[APG] Warning: Tried to ghost props but ghosting is disabled!", 1, -1, true)
+		return APG.notification("[APG] Warning: Tried to ghost props but ghosting is disabled!", 1, 0, true)
 	end
 	for _, v in next, ents.GetAll() do
 		if ( not APG.isBadEnt(v) ) or ( not APG.getOwner( v ) ) or APG.IsVehicle(v) or v.APG_Frozen then continue end
 		APG.entGhost( v, true, false  )
 	end
 	-- TODO : Fancy notify system
-	if notify or APG.cfg["notificationLagFunc"].value then
-	  APG.notification("Unfrozen props ghosted!", APG.cfg["notificationLevel"].value, 1)
+	if notify or APG.cfg["notifyLagFunc"].value then
+	  APG.notification("Unfrozen props ghosted!", APG.cfg["notifyLevel"].value, 1)
 	end
 
 	if isfunction(callback) then
@@ -197,8 +196,8 @@ function APG.freezeProps( notify, callback )
 		APG.freezeIt( v )
 	end
 	-- TODO : Fancy notify system
-	if notify or APG.cfg["notificationLagFunc"].value then
-	  APG.notification("Props frozen", APG.cfg["notificationLevel"].value, 0)
+	if notify or APG.cfg["notifyLagFunc"].value then
+	  APG.notification("Props frozen", APG.cfg["notifyLevel"].value, 0)
 	end
 
 	if isfunction(callback) then

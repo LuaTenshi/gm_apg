@@ -144,35 +144,6 @@ APG.hookAdd(mod, "OnEntityCreated", "frzr9k", function(ent)
 	end
 end)
 
--- Requires Fading Door Hooks --
-APG.hookAdd(mod, "APG.FadingDoorToggle", "frzr9k", function(ent, faded)
-	if APG.cfg["sleepyPhys"].value and IsValid(ent) and faded then
-		local ply = APG.getOwner(ent)
-		local pos = ent:GetPos()
-		local notification = false
-		local doors = {}
-		local count = 0
-
-		for _,v in next, ents.FindInSphere(pos, 3) do
-			if v ~= ent and IsValid(v) and v.isFadingDoor and APG.getOwner(v) == o then
-			table.insert(doors, v)
-			count = count + 1
-			end
-		end
-
-		if count > 2 then
-			for _,v in next, doors do
-				v:Remove()
-			end
-			notification = true
-		end
-
-		if notification then
-			APG.notification("[APG] Some of your fading doors were removed.", ply)
-		end
-	end
-end)
-
 --[[------------------------------------------
 		Load hooks and timers
 ]]--------------------------------------------

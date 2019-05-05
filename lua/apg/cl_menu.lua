@@ -26,7 +26,9 @@ local function APGBuildStackPanel()
 	panel.Paint = function( i, w, h ) end
 
 	utils.numSlider( panel, 0, 40, 500, 20, "Maximum stacked ents", "stackMax", 3, 50, 0 )
-	utils.numSlider( panel, 0, 75, 500, 20, "Stack distance (gmod units)", "stackArea", 5, 50, 0 )
+	utils.numSlider( panel, 0, 70, 500, 20, "Stack distance (gmod units)", "stackArea", 5, 50, 0 )
+	utils.numSlider( panel, 0, 100, 500, 20, "Maximum stacked fading doors", "fadingDoorStackMax", 5, 50, 0 )
+	utils.switch( panel, 0, 130, 395, 20, "Notify player when their fading door is removed.", "fadingDoorStackNotify" )
 end
 
 local function APGBuildMiscPanel()
@@ -59,7 +61,7 @@ local function APGBuildNotificationPanel()
 	utils.switch( panel, 0, 40, 395, 20, "Notification Sounds", "notificationSounds" )
 	utils.numSlider( panel, 0, 75, 500, 20, "Notification Level", "notificationLevel", 1, 3, 0 )
 	utils.switch( panel, 0, 110, 395, 20, "Do you want to show which lag function ran?", "notificationLagFunc" )
-	utils.switch( panel, 0, 145, 395, 20, "Developer logs (shows a notification, is spammy)", "developerLogs" )
+	utils.switch( panel, 0, 145, 395, 20, "Developer logs (shows a notification, is spammy)", "developerDebug" )
 end
 
 local function APGBuildToolHackPanel()

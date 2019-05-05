@@ -152,23 +152,23 @@ concommand.Add("apg_set", function( ply, cmd, args, argStr )
 		if _module != nil then
 			if _module == true then
 				APG.unLoad( args[2] )
-				APG.log( "[APG] Module " .. args[2] .. " disabled.", ply)
+				APG.notification( "[APG] Module " .. args[2] .. " disabled.", ply)
 			else
 				APG.load( args[2] )
-				APG.log( "[APG] Module " .. args[2] .. " enabled.", ply)
+				APG.notification( "[APG] Module " .. args[2] .. " enabled.", ply)
 			end
 		else
-			APG.log( "[APG] This module does not exist", ply)
+			APG.notification( "[APG] This module does not exist", ply)
 		end
 
 	elseif args[1] == "help" then
 		local cfg = APG.cfg[ args[2] ]
 		if cfg then
-			APG.log( cfg.desc, ply)
+			APG.notification( cfg.desc, ply)
 		else
-			APG.log( "[APG] Help: This setting does not exist", ply)
+			APG.notification( "[APG] Help: This setting does not exist", ply)
 		end
 	else
-		APG.log( ply, "Error: unknown setting")
+		APG.notification( ply, "Error: unknown setting")
 	end
 end)
