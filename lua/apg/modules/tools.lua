@@ -36,7 +36,7 @@ end
 ]]----------------------
 
 APG.hookAdd(mod, "CanTool", "APG_ToolMain", function(ply, tr, tool)
-	if not APG.cfg[ "checkCanTool" ] then return end
+	if not APG.cfg[ "checkCanTool" ].value then return end
 	if not APG.canTool(ply, tool, tr.Entity) then
 		return false
 	end
@@ -47,7 +47,7 @@ end)
 ]]----------------------
 
 APG.hookAdd(mod, "CanTool", "APG_ToolSpamControl", function(ply)
-	if not APG.cfg[ "blockToolSpam" ] then return end
+	if not APG.cfg[ "blockToolSpam" ].value then return end
 	ply.APG_ToolCTRL = ply.APG_ToolCTRL or {}
 
 	local ply = ply.APG_ToolCTRL
@@ -58,7 +58,7 @@ APG.hookAdd(mod, "CanTool", "APG_ToolSpamControl", function(ply)
 		ply.toolUseTimes = 0
 	else
 		ply.toolUseTimes = ply.toolUseTimes + 1
-		if ply.toolUseTimes > APG.cfg[ "blockToolRate" ] then
+		if ply.toolUseTimes > APG.cfg[ "blockToolRate" ].value then
 			return false
 		end
 	end
@@ -71,7 +71,7 @@ end)
 ]]----------------------
 
 APG.hookAdd(mod, "CanTool", "APG_ToolWorldControl", function(ply, tr)
-	if not APG.cfg[ "blockToolWorld" ] then return end
+	if not APG.cfg[ "blockToolWorld" ].value then return end
 	if tr.HitWorld and not tr.Entity then
 		return false
 	end
@@ -82,7 +82,7 @@ end)
 ]]----------------------
 
 APG.hookAdd(mod, "CanTool", "APG_ToolUnfreezeControl", function(ply, tr)
-	if not APG.cfg[ "blockToolUnfreeze" ] then return end
+	if not APG.cfg[ "blockToolUnfreeze" ].value then return end
 	
 	timer.Simple(0.003, function()
 		local ent = tr.Entity
