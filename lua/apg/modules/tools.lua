@@ -11,7 +11,11 @@
 ]]--------------------------------------------
 local mod = "tools"
 
-function APG.canTool( ply, tool )
+function APG.canTool( ply, tool, ent )
+	if not IsValid(ent) then
+		return false
+	end
+
 	if ent.ToolDisabled == false then
 		return false
 	end
@@ -33,7 +37,7 @@ end
 
 APG.hookAdd(mod, "CanTool", "APG_ToolMain", function(ply, tr, tool)
 	if not APG.cfg[ "checkCanTool" ] then return end
-	if not APG.canTool(ply, tool) then
+	if not APG.canTool(ply, tool, tr.Entity) then
 		return false
 	end
 end)
@@ -48,6 +52,7 @@ APG.hookAdd(mod, "CanTool", "APG_ToolSpamControl", function(ply)
 
 	local ply = ply.APG_ToolCTRL
 	ply.curTime = CurTime()
+	ply.toolDelay = ply.toolDelay or 0
 
 	if ply.curTime > ply.toolDelay then
 		ply.toolUseTimes = 0
