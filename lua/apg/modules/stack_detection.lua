@@ -61,17 +61,21 @@ APG.hookAdd(mod, "APG.FadingDoorToggle", "APG_fadingDoorStackCheck", function(en
 			end
 		end
 
-		if count >= APG.cfg["fadingDoorStackMax"].value then
-			for _,v in next, doors do
-				v:Remove()
+		if not notification then
+			if count >= APG.cfg["fadingDoorStackMax"].value then
+				notification = true
+				for _,v in next, doors do
+					v:Remove()
+				end
+				APG.notification(ply:Nick() .. " had a stack of " .. count .. " fading doors that were removed.", APG.cfg["notifyLevel"].value, 2)
 			end
-			APG.notification(ply:Nick() .. " had a stack of " .. count .. " fading doors that were removed.", APG.cfg["notifyLevel"].value, 2)
-			notification = true
-		end
 
-		if notification and APG.cfg["fadingDoorStackNotification"].value then
-			APG.notification("Some of your fading doors were removed.", ply)
-			notification = false
+			if notification and APG.cfg["fadingDoorStackNotification"].value then
+				APG.notification("Some of your fading doors were removed.", ply)
+				timer.Simple(1, function()
+					notification = false
+				end)
+			end
 		end
 	end
 end)
