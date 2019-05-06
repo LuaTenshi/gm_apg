@@ -13,6 +13,7 @@
 
 ]]--------------------------------------------
 local mod = "stack_detection"
+local SafeRemoveEntity = SafeRemoveEntity
 
 function APG.checkStack( ent, pcount )
 	if not APG.isBadEnt( ent ) then return end
@@ -44,40 +45,43 @@ APG.hookAdd(mod, "PhysgunPickup","APG_stackCheck",function(ply, ent)
 end)
 
 -- Requires Fading Door Hooks --
+local notify = false
+local curTime = 0
+local lastCall = 0
+
 APG.hookAdd(mod, "APG.FadingDoorToggle", "APG_fadingDoorStackCheck", function(ent, faded)
+	curTime = CurTime()
+
 	if IsValid(ent) and faded then
 		local ply = APG.getOwner(ent)
 		local pos = ent:GetPos()
-		local notification = false
 		local doors = {}
 		local count = 1 -- Start at 1 to include the original fading door
 
 		for _,v in next, ents.FindInSphere(pos, APG.cfg["stackArea"].value) do
-			--APG.debug("Is not same Entity " .. tostring(v ~= ent) .. " Is Valid: " .. tostring(IsValid(v))  .. " Is Fading Door " .. tostring(v.isFadingDoor) .. " Same Owner: " .. tostring(APG.getOwner(v) == ply))
 			if v ~= ent and IsValid(v) and v.isFadingDoor and APG.getOwner(v) == ply then
 				table.insert(doors, v)
 				count = count + 1
-				--APG.debug("Fading door count " .. count)
 			end
 		end
 
-		if not notification then
-			if count >= APG.cfg["fadingDoorStackMax"].value then
-				notification = true
-				for _,v in next, doors do
-					v:Remove()
-				end
-				APG.notification(ply:Nick() .. " had a stack of " .. count .. " fading doors that were removed.", APG.cfg["notifyLevel"].value, 2)
+		if count >= APG.cfg["fadingDoorStackMax"].value then
+			notify = true
+			for _,v in next, doors do
+				SafeRemoveEntity(v)
 			end
+		end
 
-			if notification and APG.cfg["fadingDoorStackNotification"].value then
+		if curTime > lastCall then
+			if notify and APG.cfg["fadingDoorStackNotification"].value then
+				notify = false
+				APG.notification(ply:Nick() .. " had a stack of " .. count .. " fading doors that were removed.", APG.cfg["notifyLevel"].value, 2)
 				APG.notification("Some of your fading doors were removed.", ply)
-				timer.Simple(1, function()
-					notification = false
-				end)
 			end
 		end
 	end
+
+	lastCall = curTime + 0.001
 end)
 
 --[[--------------------
