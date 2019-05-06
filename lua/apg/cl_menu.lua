@@ -31,6 +31,19 @@ local function APGBuildStackPanel()
 	utils.switch( panel, 0, 130, 395, 20, "Notify player when their fading door is removed.", "fadingDoorStackNotify" )
 end
 
+local function APGBuildToolsPanel()
+	local panel = APG_panels[ "tools" ]
+	panel.Paint = function( i, w, h ) end
+
+	utils.switch( panel, 0, 40, 395, 20, "Should tools be blocked on APG_CantPickup", "checkCanTool" )
+	utils.switch( panel, 0, 70, 395, 20, "Block players from spamming the toolgun", "blockToolSpam" )
+	utils.numSlider( panel, 0, 100, 500, 20, "Max click's per second", "blockToolRate", 3, 50, 0 )
+	utils.switch( panel, 0, 130, 395, 20, "Prevent using the toolgun on the world", "blockToolWorld" )
+	utils.switch( panel, 0, 160, 395, 20, "Prevent the toolgun from unfreezing props", "blockToolUnfreeze" )
+	utils.switch( panel, 0, 190, 395, 20, "Review entities near tool use", "checkTooledEnts" )
+
+end
+
 local function APGBuildMiscPanel()
 	local panel = APG_panels[ "misc" ]
 	panel.Paint = function( i, w, h ) end
@@ -312,6 +325,7 @@ local function openMenu( len )
 		i = i + 1
 	end
 	APGBuildMiscPanel()
+	APGBuildToolsPanel()
 	APGBuildGhostPanel()
 	APGBuildLagPanel()
 	APGBuildStackPanel()

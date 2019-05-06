@@ -12,23 +12,22 @@
 local mod = "tools"
 
 function APG.canTool( ply, tool, ent )
-	if not IsValid(ent) then
+	if IsValid(ent) then
+		if ent.ToolDisabled == false then
+			return false
+		end
+
+		if ent.CPPICanTool then
+			return ent:CPPICanTool(ply, tool)
+		end -- Let CPPI handle things from here.
+
+	end
+
+	if APG.cfg[ "checkCanTool" ].value and ply.APG_CantPickup == true then-- If we can't pickup we can't tool either.
 		return false
 	end
 
-	if ent.ToolDisabled == false then
-		return false
-	end
-
-	if ply.APG_CantPickup == true then
-		return false 
-	end -- If we can't pickup we can't tool either.
-
-	if ent.CPPICanTool then 
-		return ent:CPPICanTool(ply, tool)
-	end -- Let CPPI handle things from here.
-
-	return false
+	return 0 -- return 0 so if all of the check's don't return anything then it doesn't default to disabling toolgun.
 end
 
 --[[--------------------
@@ -36,7 +35,6 @@ end
 ]]----------------------
 
 APG.hookAdd(mod, "CanTool", "APG_ToolMain", function(ply, tr, tool)
-	if not APG.cfg[ "checkCanTool" ].value then return end
 	if not APG.canTool(ply, tool, tr.Entity) then
 		return false
 	end
@@ -53,9 +51,13 @@ APG.hookAdd(mod, "CanTool", "APG_ToolSpamControl", function(ply)
 	local ply = ply.APG_ToolCTRL
 	ply.curTime = CurTime()
 	ply.toolDelay = ply.toolDelay or 0
+	ply.toolUseTimes = ply.toolUseTimes or 0
 
 	if ply.curTime > ply.toolDelay then
-		ply.toolUseTimes = 0
+		ply.toolUseTimes = ply.toolUseTimes - 1
+		if ply.toolUseTimes < 0 or ply.curTime > ply.toolDelay + 2 then
+			ply.toolUseTimes = 0
+		end
 	else
 		ply.toolUseTimes = ply.toolUseTimes + 1
 		if ply.toolUseTimes > APG.cfg[ "blockToolRate" ].value then

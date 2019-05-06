@@ -253,7 +253,7 @@ defaultSettings.cfg = {
 		desc = "Allow prop killing"
 	},
 
-	developerLogs = {
+	developerDebug = {
 		value = false,
 		desc = "Dev Logs (prints stuff)"
 	}

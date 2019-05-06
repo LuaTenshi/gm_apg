@@ -60,6 +60,7 @@ function APG.notification(msg, targets, notifyLevel, log) -- The most advanced n
 		targets = player.GetHumans()
 	elseif (targets == "-1" or targets == "console") then
 		MsgC( Color( 72, 216, 41 ), "[", Color( 255, 0, 0 ), "APG", Color( 72, 216, 41 ), "]", Color( 255, 255, 255 ), msg )
+		return true -- if it's for the console we don't need to go any farther.
 	end
 
 	msg = (string.Trim(msg or "") ~= "") and msg or nil
