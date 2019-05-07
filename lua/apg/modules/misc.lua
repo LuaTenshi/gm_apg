@@ -145,8 +145,9 @@ local pstop = FrameTime() * 3
 APG.timerAdd(mod, "frzr9k", pstop, 0, function()
 	if APG.cfg["sleepyPhys"].value then
 		for _,v in next, ents.GetAll() do
-			local phys = getPhys(v)
-			if IsValid(phys) and phys:IsMotionEnabled() and not v:IsPlayerHolding() then
+			local phys = getPhys( v )
+			local isBadEnt = APG.isBadEnt( v )
+			if isBadEnt and phys:IsMotionEnabled() and not v:IsPlayerHolding() then
 				local vel = v:GetVelocity()
 				if vel:Distance(zero) <= 23 then
 					phys:Sleep()
@@ -203,8 +204,8 @@ end
 
 APG.hookAdd(mod, "OnEntityCreated", "frzr9k", function(ent)
 	if APG.cfg["sleepyPhys"].value and APG.cfg["sleepyPhysHook"].value then
-		timer.Simple(0.1, function()
-			if IsValid(ent) and ent.getPhysicsObject and IsValid(ent:GetPhysicsObject()) then
+		timer.Simple(0.05, function()
+			if APG.isBadEnt( ent ) and ent.getPhysicsObject and IsValid( ent:GetPhysicsObject() ) then
 				ent:AddCallback("PhysicsCollide", collcall)
 			end
 		end)
