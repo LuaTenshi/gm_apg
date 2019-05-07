@@ -301,7 +301,7 @@ local function openMenu( len )
 		draw.RoundedBox( 0, w-1, 0, 1, h, main_color_darker)
 	end
 
-	local x, y = APG_Main:GetWide() - 150, APG_Main:GetTall() - 35
+	local x, y = (APG_Main:GetWide() - sidebar:GetWide()) - 19, APG_Main:GetTall() - 35
 	local px, py = sidebar:GetWide() + 15, 30
 	local first = true
 
@@ -332,7 +332,7 @@ local function openMenu( len )
 
 			local text = utils.getNiceName(k) .. " module "
 			draw.DrawText( text, "APG_mainPanel_font", 5, 8, Color( 189, 189, 189 ), 3 )
-			menu:mainSwitch( w * 0.82, (h * 0.5) - 16, enabled )
+			menu:mainSwitch( w * 0.90, (h * 0.5) - 16, enabled )
 		end
 
 		button.DoClick = function()
