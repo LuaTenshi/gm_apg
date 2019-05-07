@@ -43,7 +43,6 @@ defaultSettings.modules = { -- Set to true to enable and false to disable module
 	["stack_detection"] = true,
 	["lag_detection"] = true,
 	["misc"] = true,
-	["misc2"] = true,
 	["notification"] = true,
 }
 
