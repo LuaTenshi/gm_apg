@@ -76,7 +76,7 @@ end)
 
 local function getPhys(ent)
 	local phys = IsValid(ent) and ent.GetPhysicsObject and ent:GetPhysicsObject() or false
-	return IsValid(phys) and phys or false
+	return ( phys and IsValid(phys) ) and phys or false
 end
 
 APG.hookAdd(mod, "CanTool", "APG_fadingDoorTool", function(ply, tr, tool)
@@ -147,7 +147,7 @@ APG.timerAdd(mod, "frzr9k", pstop, 0, function()
 		for _,v in next, ents.GetAll() do
 			local phys = getPhys( v )
 			local isBadEnt = APG.isBadEnt( v )
-			if isBadEnt and phys:IsMotionEnabled() and not v:IsPlayerHolding() then
+			if isBadEnt and phys and ( phys:IsMotionEnabled() and not v:IsPlayerHolding() ) then
 				local vel = v:GetVelocity()
 				if vel:Distance(zero) <= 23 then
 					phys:Sleep()
@@ -205,7 +205,7 @@ end
 APG.hookAdd(mod, "OnEntityCreated", "frzr9k", function(ent)
 	if APG.cfg["sleepyPhys"].value and APG.cfg["sleepyPhysHook"].value then
 		timer.Simple(0.05, function()
-			if APG.isBadEnt( ent ) and ent.getPhysicsObject and IsValid( ent:GetPhysicsObject() ) then
+			if APG.isBadEnt( ent ) and getPhys( ent ) then
 				ent:AddCallback("PhysicsCollide", collcall)
 			end
 		end)
