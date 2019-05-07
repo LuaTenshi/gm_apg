@@ -291,15 +291,22 @@ end
 APG.hookAdd( mod, "OnEntityCreated", "APG_noCollideOnCreate", function( ent )
 	if not APG.modules[ mod ] or not APG.isBadEnt( ent ) then return end
 	if not IsValid( ent ) then return end
+
 	if ent:GetClass() == "gmod_hands" then return end -- Fix shadow glitch
 
 	timer.Simple( 0, function()
+		if not ent then return end
+		if not ent:IsSolid() then return end -- Don't ghost ghosts.
+
 		APG.entGhost( ent )
 		APG.debug(tostring(ent) .. " was spawned by " .. APG.getOwner(ent):Nick() .. " and was ghosted.")
 	end)
-	timer.Simple( 0, function()
-		local owner = APG.getOwner( ent )
 
+	timer.Simple( 0, function()
+		if not ent then return end
+		if not ent:IsSolid() then return end -- Don't ghost ghosts.
+
+		local owner = APG.getOwner( ent )
 		DropEntityIfHeld( ent )
 		ent:ForcePlayerDrop()
 

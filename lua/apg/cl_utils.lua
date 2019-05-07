@@ -68,8 +68,6 @@ function utils.getNiceName( str )
 	return nName
 end
 
-print("HELLO! !!! ", menu)
-
 function menu:mainSwitch( x, y, on )
 	draw.RoundedBox(10, x, y, 45, 18, Color( 58, 58, 58, 255))
 	if on then
