@@ -125,8 +125,6 @@ function menu:switch( w, h, text, var )
 
 	self.vars.x = x + ix
 	self.vars.y = y + iy
-
-	print(self.vars.y)
 end
 
 function menu:numSlider( w, h, text, var, minSlider, maxSlider, decimal )
