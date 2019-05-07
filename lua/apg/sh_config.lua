@@ -169,6 +169,16 @@ defaultSettings.cfg = {
 		desc = "Toggle vehicle ghosting"
 	},
 
+	blockGravGunThrow = {
+		value = true,
+		desc = "Toggle GravGun throwing."
+	},
+
+	blockFlashlightSpam = {
+		value = false,
+		desc = "Toggle flashlight spamming."
+	},
+
 	--[[ Tool Control ]]--
 	
 	checkCanTool = {

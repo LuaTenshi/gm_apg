@@ -16,7 +16,7 @@
 local mod = "misc"
 
 --[[--------------------
-	Vehicle damage
+	Helper functions
 ]]----------------------
 local function isVehDamage( dmg, atk, ent )
 	if not IsValid( ent ) then return false end
@@ -24,6 +24,11 @@ local function isVehDamage( dmg, atk, ent )
 		return true
 	end
 	return false
+end
+
+local function getPhys(ent)
+	local phys = IsValid(ent) and ent.GetPhysicsObject and ent:GetPhysicsObject() or false
+	return ( phys and IsValid(phys) ) and phys or false
 end
 
 --[[--------------------
@@ -62,6 +67,14 @@ APG.hookAdd( mod, "OnPhysgunReload", "APG_blockPhysgunReload", function( _, ply 
 end)
 
 --[[--------------------
+	Block Gravitygun Throwing
+]]----------------------
+APG.hookAdd( mod, "GravGunOnDropped", "APG_blockGravGunThrow", function(ply, ent)
+	if ( not APG.cfg["blockGravGunThrow"].value ) then return end
+	APG.killVelocity(ent, false, false, true)
+end)
+
+--[[--------------------
 	Auto prop freeze
 ]]----------------------
 APG.timerAdd( mod, "APG_autoFreeze", APG.cfg[ "autoFreezeTime" ].value, 0, function()
@@ -73,11 +86,6 @@ end)
 --[[--------------------
 	Fading door management
 ]]----------------------
-
-local function getPhys(ent)
-	local phys = IsValid(ent) and ent.GetPhysicsObject and ent:GetPhysicsObject() or false
-	return ( phys and IsValid(phys) ) and phys or false
-end
 
 APG.hookAdd(mod, "CanTool", "APG_fadingDoorTool", function(ply, tr, tool)
 	if IsValid(tr.Entity) and tr.Entity.APG_Ghosted then
@@ -134,6 +142,37 @@ APG.hookAdd(mod, "APG.FadingDoorToggle", "init", function(ent, state, ply)
 	local phys = getPhys(ent)
 	if phys then
 		phys:EnableMotion(false)
+	end
+end)
+
+--[[ Flashlight Spam ]]--
+local spammers = {}
+APG.hookAdd(mod, "PlayerSwitchFlashlight", "APG_flashlightSpam", function(ply, enabled)
+	if not APG.cfg[ "blockFlashlightSpam" ].value then return end
+
+	if ply:CanUseFlashlight() and enabled then
+		spammers[tostring(ply:UserID())] = spammers[tostring(ply:UserID())] or {}
+		local key = spammers[tostring(ply:UserID())]
+
+		key.times = key.times and key.times + 1 or 1
+		key.when = key.when or CurTime()
+
+		if key.times > 4 then
+			local can = ply:CanUseFlashlight()
+			ply:AllowFlashlight(false)
+			ply:EmitSound('buttons/button10.wav')
+
+			timer.Simple(4, function()
+				if IsValid(ply) then
+					ply:AllowFlashlight(can)
+					spammers[tostring(ply:UserID())] = nil
+				end
+			end)
+		end
+
+		if key.when+1 < CurTime() then
+			spammers[tostring(ply:UserID())] = nil
+		end
 	end
 end)
 

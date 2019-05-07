@@ -105,10 +105,13 @@ function APG.killVelocity(ent, extend, freeze, wake_target)
 	end
 
 	if wake_target then
-		local phys = ent:GetPhysicsObject()
-		if IsValid(phys) then
-			phys:Wake()
-		end
+		timer.Simple(0, function()
+			if not IsValid(ent) then return end
+			local phys = ent:GetPhysicsObject()
+			if IsValid(phys) then
+				phys:Wake()
+			end
+		end)
 	end
 end
 
