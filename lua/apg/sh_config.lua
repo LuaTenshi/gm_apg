@@ -43,6 +43,7 @@ defaultSettings.modules = { -- Set to true to enable and false to disable module
 	["stack_detection"] = true,
 	["lag_detection"] = true,
 	["misc"] = true,
+	["tools"] = true,
 	["notification"] = true,
 }
 
@@ -181,8 +182,13 @@ defaultSettings.cfg = {
 	},
 
 	blockToolRate = {
-		value = 3,
-		desc = "How fast can we use the toolgun before it gets blocked? (Clicks per second)"
+		value = 5,
+		desc = "How fast can we use the toolgun before it gets blocked? (Clicks per second(s))"
+	},
+
+	blockToolDelay = {
+		value = 1,
+		desc = "How many seconds should we wait after we were stopped? (The aforementioned second(s))"
 	},
 
 	blockToolWorld = {
@@ -193,6 +199,11 @@ defaultSettings.cfg = {
 	blockToolUnfreeze = {
 		value = true,
 		desc = "Prevent the toolgun from unfreezing props."
+	},
+
+	blockCreatorTool = {
+		value = true,
+		desc = "Should we block the creator tool?"
 	},
 
 	checkTooledEnts = {

@@ -42,9 +42,11 @@ local function APGBuildToolsPanel()
 	menu:initPanel( panel, 0, 40, 0, 35 )
 	menu:switch( 395, 20, "Should tools be blocked on APG_CantPickup", "checkCanTool" )
 	menu:switch( 395, 20, "Block players from spamming the toolgun", "blockToolSpam" )
-	menu:numSlider( 500, 20, "Max click's per second", "blockToolRate", 3, 50, 0 )
+	menu:numSlider( 500, 20, "Max click's per second(s)", "blockToolRate", 1, 15, 0 ) -- It's really hard to click more then 15 times a second.
+	menu:numSlider( 500, 20, "The aforementioned second(s)", "blockToolDelay", 1, 5, 0 )
 	menu:switch( 395, 20, "Prevent using the toolgun on the world", "blockToolWorld" )
 	menu:switch( 395, 20, "Prevent the toolgun from unfreezing props", "blockToolUnfreeze" )
+	menu:switch( 395, 20, "Block the Creator Tool?", "blockCreatorTool" )
 	menu:switch( 395, 20, "Review entities near tool use", "checkTooledEnts" )
 	menu:panelDone()
 end
@@ -106,7 +108,7 @@ local function APGBuildGhostPanel()
 
 	menu:initPanel( panel, 0, 180, 0, 35 )
 	menu:switch( 170, 20, "Always frozen", "alwaysFrozen" )
-	menu:switch( 170, 20, "Apply to doors", "fadingDoorGhosting" )
+	menu:switch( 170, 20, "Fading Doors", "fadingDoorGhosting" )
 	menu:switch( 170, 20, "Ignore Vehicles", "vehAntiGhost" )
 	local offsets = menu:panelDone()
 

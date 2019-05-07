@@ -44,31 +44,38 @@ end)
 ]]----------------------
 
 APG.hookAdd(mod, "CanTool", "APG_ToolSpamControl", function(ply)
-	if APG.cfg[ "blockToolSpam" ].value then
-		ply.APG_ToolCTRL = ply.APG_ToolCTRL or {}
+	if not APG.cfg[ "blockToolSpam" ].value then return end
 
-		local ply = ply.APG_ToolCTRL
-		local diff = 0
+	ply.APG_ToolCTRL = ply.APG_ToolCTRL or {}
 
-		ply.curTime = CurTime()
-		ply.toolDelay = ply.toolDelay or 0
-		ply.toolUseTimes = ply.toolUseTimes or 0
+	local ply = ply.APG_ToolCTRL
+	local delay = 0
+	local diff = 0
 
-		if ply.curTime > ply.toolDelay then
-			ply.toolUseTimes = ply.toolUseTimes - 1
-			diff = ply.curTime - ply.toolDelay
+	ply.curTime = CurTime()
+	ply.toolDelay = ply.toolDelay or 0
+	ply.toolUseTimes = ply.toolUseTimes or 0
 
-			if ply.toolUseTimes < 0 or diff > 2 then
-				ply.toolUseTimes = 0
-			end
-		else
-			ply.toolUseTimes = ply.toolUseTimes + 1
-			if ply.toolUseTimes > APG.cfg[ "blockToolRate" ].value then
-				return false
-			end
+	diff = ply.curTime - ply.toolDelay
+	delay = APG.cfg[ "blockToolDelay" ].value
+
+	if ply.toolUseTimes <= 0 or diff > delay then
+		ply.toolUseTimes = 0
+		ply.toolDelay = 0
+	end
+
+	if diff > 0 then
+		ply.toolUseTimes = math.max( ply.toolUseTimes - 1, 0 )
+	else
+		ply.toolUseTimes = math.min( ply.toolUseTimes + 1, APG.cfg[ "blockToolRate" ].value )
+		if ply.toolUseTimes >= APG.cfg[ "blockToolRate" ].value then
+			ply.toolDelay = ply.curTime + delay
+			return false
 		end
-
-		ply.toolDelay = ply.curTime + 1
+	end
+	
+	if ply.toolDelay == 0 then
+		ply.toolDelay = ply.curTime + delay
 	end
 end)
 
@@ -77,10 +84,9 @@ end)
 ]]----------------------
 
 APG.hookAdd(mod, "CanTool", "APG_ToolWorldControl", function(ply, tr)
-	if APG.cfg[ "blockToolWorld" ].value then
-		if tr.HitWorld and not tr.Entity then
-			return false
-		end
+	if not APG.cfg[ "blockToolWorld" ].value then return end
+	if tr.HitWorld then
+		return false
 	end
 end)
 
@@ -89,20 +95,28 @@ end)
 ]]----------------------
 
 APG.hookAdd(mod, "CanTool", "APG_ToolUnfreezeControl", function(ply, tr)
-	if APG.cfg[ "blockToolUnfreeze" ].value then	
-		timer.Simple(0.003, function()
-			local ent = tr.Entity
-			local phys = NULL
+	if not APG.cfg[ "blockToolUnfreeze" ].value then return end
+	timer.Simple(0.003, function()
+		local ent = tr.Entity
+		local phys = NULL
 
-			if IsValid(ent) then
-				phys = ent:GetPhysicsObject()
-				if IsValid(phys) and phys:IsMotionEnabled() then
-					phys:EnableMotion( false )
-				end
+		if IsValid(ent) then
+			phys = ent:GetPhysicsObject()
+			if IsValid(phys) and phys:IsMotionEnabled() then
+				phys:EnableMotion( false )
 			end
-		end)
-	end
+		end
+	end)
 end)
+
+local conVar = GetConVar("toolmode_allow_creator")
+if conVar then
+	if APG.cfg[ "blockCreatorTool" ].value then
+		conVar:SetBool(false)
+	else
+		conVar:SetBool(true)
+	end
+end
 
 --[[------------------------------------------
 		Load hooks and timers

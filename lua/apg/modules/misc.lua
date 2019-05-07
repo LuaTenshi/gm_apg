@@ -79,7 +79,7 @@ local function getPhys(ent)
 	return IsValid(phys) and phys or false
 end
 
-APG.hookAdd(mod, "CanTool", "APG_canTool", function(ply, tr, tool)
+APG.hookAdd(mod, "CanTool", "APG_fadingDoorTool", function(ply, tr, tool)
 	if IsValid(tr.Entity) and tr.Entity.APG_Ghosted then
 		APG.notification("Cannot use tool on ghosted entity!", ply, 1)
 		return false
