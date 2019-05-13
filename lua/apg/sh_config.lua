@@ -31,6 +31,13 @@ if CLIENT then
 		"smart_cleanup", -- Cleanup unfrozen fading doors, freeze unfrozens, remove large stacks
 		"custom_function" -- Your custom function (see APG.customFunc)
 	} -- THIS IS INFORMATIVE PURPOSE ONLY !
+
+	APG_notifyLevels = {
+		"disabled",
+		"everyone",
+		"admin",
+		"superadmin"
+	}
 end
 
 --[[------------------------------------------
@@ -149,24 +156,25 @@ defaultSettings.cfg = {
 	},
 
 	notifyLevel = {
-		value = 2,
-		desc = "notification : 0 - Disabled, 1 - Everyone, 2 - Staff only (set in notifyRanks), 3 - Superadmins"
+		value = "admin",
+		desc = "notification : 0 - Disabled, 1 - Everyone, 2 - Admins, 3 - Superadmins"
 	},
 
 	notifyLagFunc = {
 		value = false,
 		desc = "Do you want the notifyLevel to see the lagFunc that ran? (refer to APG_lagFuncs)"
 	},
+	
+	-- TODO: Make a ULX/ULIB module
+	-- notifyULibInheritance = {
+	-- 	value = true,
+	-- 	desc = "Do you want to use inheritance for notifyRanks? (only works with ULIB/ULX)"
+	-- },
 
-	notifyULibInheritance = {
-		value = true,
-		desc = "Do you want to use inheritance for notifyRanks? (only works with ULIB/ULX)"
-	},
-
-	notifyRanks = {
-		value = { "trialmod", "moderator", "admin", "superadmin", "owner" },
-		desc = "The ranks that you want to see the notification" -- If you have notifyULibInheritance you only need to do the lowest rank(s)
-	},
+	-- notifyRanks = {
+	-- 	value = { "trialmod", "moderator", "admin", "superadmin", "owner" },
+	-- 	desc = "The ranks that you want to see the notification" -- If you have notifyULibInheritance you only need to do the lowest rank(s)
+	-- },
 
 
 	--[[----------

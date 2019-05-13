@@ -91,7 +91,7 @@ local function APGBuildNotificationPanel()
 
 	menu:initPanel( panel, 0, 40, 0, 35 )
 	menu:switch( 568, 20, "Notification Sounds", "notifySounds" )
-	menu:numSlider( 568, 20, "Notification Level", "notifyLevel", 1, 3, 0 )
+	menu:comboBox( 568, 20, "Notification Level", "notifyLevel", APG_notifyLevels )
 	menu:switch( 570, 20, "Do you want to show what lag function ran?", "notifyLagFunc" )
 	menu:switch( 568, 20, "Developer logs (shows a notification, is spammy)", "developerDebug" )
 	menu:panelDone()
@@ -563,16 +563,6 @@ properties.Add( "apgoptions", {
 		addoption( "Ghost this entity", {
 			icon = "icon16/tick.png",
 			callback = function() self:APGcmd( ent, "ghost" ) end,
-		})
-
-		addoption( "Get Entity Name", {
-			icon = "icon16/tick.png",
-			callback = function() self:APGcmd( ent, "getentname" ) end,
-		})
-		
-		addoption( "laghook", {
-			icon = "icon16/tick.png",
-			callback = function() self:APGcmd( ent, "laghook" ) end,
 		})
 
 	end,

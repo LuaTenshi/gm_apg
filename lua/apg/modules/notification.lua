@@ -26,7 +26,10 @@ function APG.notify(log, level, target, ... ) -- The most advanced notification 
 	if target then
 		if type(target) == "string" then
 			(({
-				["all"] = function() 
+				["disabled"] = function()
+					target = "disabled"
+				end,
+				["all"] = function()
 					target = player.GetHumans()
 				end,
 				["admin"] = function()
@@ -37,7 +40,7 @@ function APG.notify(log, level, target, ... ) -- The most advanced notification 
 						end
 					end
 					target = data
-				end, 
+				end,
 				["superadmin"] = function()
 					local data = player.GetHumans()
 					for k, v in next, data do
@@ -60,7 +63,6 @@ function APG.notify(log, level, target, ... ) -- The most advanced notification 
 
 	local outMsg = ""
 
-	
 	for _, v in next, msg do
 		local data = v and tostring(v) or ""
 		if string.len( outMsg ) == 0 then
@@ -73,9 +75,9 @@ function APG.notify(log, level, target, ... ) -- The most advanced notification 
 	outMsg = string.Trim( outMsg )
 
 	if string.len( outMsg ) > 0 and ( log or isConsole ) then
-		ServerLog("[APG] " .. msg .. "\n")
+		ServerLog("[APG] " .. outMsg .. "\n")
 		if isConsole then
-			MsgC( Color( 72, 216, 41 ), "[APG]", Color( 255, 255, 255 ), msg )
+			MsgC( Color( 72, 216, 41 ), "[APG]", Color( 255, 255, 255 ), outMsg)
 			return true
 		end
 	end

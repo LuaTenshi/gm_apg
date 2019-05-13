@@ -155,7 +155,7 @@ hook.Remove( "APG_lagDetected", "main") -- Sometimes, I dream about cheese.
 hook.Add( "APG_lagDetected", "main", function()
 	if not APG then return end
 
-	APG.notify( true, APG.cfg["notifyLevel"].value, "all", "!WARNING LAG DETECTED!" )
+	APG.notify( true, 2, APG.cfg["notifyLevel"].value, "!WARNING LAG DETECTED!" )
 
 	local funcName = APG.cfg[ "lagFunc" ].value
 	local func = lagFix[ funcName ]

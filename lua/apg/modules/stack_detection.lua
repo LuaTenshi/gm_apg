@@ -31,9 +31,10 @@ function APG.checkStack( ent, pcount )
 		ent:Remove()
 		if not owner.APG_CantPickup then
 			APG.blockPickup( owner, 10 )
-			APG.notification("Do not try to crash the server!", owner, 1)
+			
+			APG.notify( false, 2, owner, "You tried to unfreeze a stack of " .. count .. " props! >:(" )
 			hook.Run("APG_stackCrashAttempt", owner, count)
-			APG.notification(owner:Nick() .. " [" .. owner:SteamID() .. "]" .. " tried to unfreeze a stack of " .. count .. " props!", APG.cfg["notifyLevel"].value, 2)
+			APG.notify( true, 2, APG.cfg["notifyLevel"].value, owner:Nick() .. " [" .. owner:SteamID() .. "]" .. " tried to unfreeze a stack of " .. count .. " props!" )
 		end
 	end
 end
