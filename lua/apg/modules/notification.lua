@@ -26,9 +26,6 @@ function APG.notify(log, level, target, ... ) -- The most advanced notification 
 	if target then
 		if type(target) == "string" then
 			(({
-				["disabled"] = function()
-					target = "disabled"
-				end,
 				["all"] = function()
 					target = player.GetHumans()
 				end,

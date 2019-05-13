@@ -33,7 +33,6 @@ if CLIENT then
 	} -- THIS IS INFORMATIVE PURPOSE ONLY !
 
 	APG_notifyLevels = {
-		"disabled",
 		"everyone",
 		"admin",
 		"superadmin"
@@ -157,14 +156,14 @@ defaultSettings.cfg = {
 
 	notifyLevel = {
 		value = "admin",
-		desc = "notification : 0 - Disabled, 1 - Everyone, 2 - Admins, 3 - Superadmins"
+		desc = "Notification levels, refer to APG_notifyLevels"
 	},
 
 	notifyLagFunc = {
 		value = false,
 		desc = "Do you want the notifyLevel to see the lagFunc that ran? (refer to APG_lagFuncs)"
 	},
-	
+
 	-- TODO: Make a ULX/ULIB module
 	-- notifyULibInheritance = {
 	-- 	value = true,
