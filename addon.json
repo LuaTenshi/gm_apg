@@ -1,0 +1,17 @@
+{
+    "title": "APG - Anti Prop Griefing & Crash Detection",
+    "type": "ServerContent",
+    "tags": [
+        "roleplay",
+        "build"
+    ],
+    "ignore": [
+        ".git",
+        ".travis.yml",
+        "*.psd",
+        "*.vcproj",
+        "*.svn*",
+        "*.git*",
+        "*.md"
+    ]
+}

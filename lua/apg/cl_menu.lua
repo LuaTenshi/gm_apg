@@ -23,6 +23,28 @@ net.Receive( "apg_notice_s2c", function()
 	showNotice(notifyLevel, notifyMessage)
 end)
 
+local function APGBuildHomePanel()
+	local panel = APG_panels[ "home" ]
+	panel.Paint = function( i, w, h ) end
+
+	local github = "https://github.com/NanoAi/gm_apg"
+
+	menu:initPanel( panel, 0, 40, 0, 35 )
+	menu:switch( 568, 20, "Welcome to APG! ( https://git.io/fjCQK )")
+	menu:switch( 568, 20, "Remember to check the github for updates! (Click to Copy)", function()
+		SetClipboardText( github )
+		showNotice(0, "Github URL copied to clipboard!")
+	end)
+	menu:switch( 568, 20, "<-- Select a Module to Configure!")
+	menu:switch( 568, 20, "To see this menu again just say \"!apg\"")
+	menu:switch( 568, 20, "For more help the wiki is available on the Github! (Click to Copy)", function()
+		SetClipboardText( github .. "/wiki" )
+		showNotice(0, "Github URL copied to clipboard!")
+	end)
+	menu:switch( 568, 20, "Sorry for the bad home page, this is hopefully a placeholder. : )")
+	menu:panelDone()
+end
+
 local function APGBuildStackPanel()
 	local panel = APG_panels[ "stack_detection" ]
 	panel.Paint = function( i, w, h ) end
@@ -46,7 +68,7 @@ local function APGBuildToolsPanel()
 	menu:numSlider( 568, 20, "The aforementioned second(s)", "blockToolDelay", 1, 5, 0 )
 	menu:switch( 568, 20, "Prevent using the toolgun on the world", "blockToolWorld" )
 	menu:switch( 568, 20, "Prevent the toolgun from unfreezing props", "blockToolUnfreeze" )
-	menu:switch( 568, 20, "Block the Creator Tool?", "blockCreatorTool" )
+	menu:switch( 568, 20, "Block the Creator Tool? (Requires OSS)", "blockCreatorTool" )
 	menu:switch( 568, 20, "Review entities near tool use", "checkTooledEnts" )
 	menu:panelDone()
 end
@@ -56,6 +78,7 @@ local function APGBuildMiscPanel()
 	panel.Paint = function( i, w, h ) end
 
 	menu:initPanel( panel, 0, 40, 0, 35 )
+	menu:switch( 568, 20, "Override Server Settings? (OSS)", "touchServerSettings" )
 	menu:switch( 568, 20, "Auto freeze over time", "autoFreeze" )
 	menu:numSlider( 568, 20, "Auto freeze delay(seconds)", "autoFreezeTime", 5, 600, 0 )
 	menu:switch( 568, 20, "Disable vehicle damages", "vehDamage" )
@@ -68,7 +91,7 @@ local function APGBuildMiscPanel()
 	menu:switch( 568, 20, "Activate FRZR9K (Sleepy Physics)", "sleepyPhys" )
 	menu:switch( 568, 20, "Hook FRZR9K into collision (Experimental)", "sleepyPhysHook" )
 	menu:switch( 568, 20, "Allow prop killing", "allowPK" )
-	menu:switch( 568, 20, "Block flashlight spam", "blockFlashlightSpam" )
+	menu:switch( 568, 20, "Activate Turbo Physics (Requires OSS)", "setTurboPhysics" )
 	menu:panelDone()
 end
 
@@ -159,7 +182,7 @@ local function APGBuildGhostPanel()
 	goodList:SetHideHeaders( false )
 	goodList:AddColumn( "Class" )
 	goodList:AddColumn( "Exact" )
-	
+
 	function goodList:OnRowRightClick( id, line )
 		local key = line:GetColumnText(1)
 		local value = not tobool(line:GetColumnText(2))
@@ -174,7 +197,7 @@ local function APGBuildGhostPanel()
 		for class,complete in pairs(APG.cfg[ "badEnts" ].value) do
 			badList:AddLine(class, complete)
 		end
-		
+
 		goodList:Clear()
 		for class,complete in pairs(APG.cfg[ "unGhostingWhitelist" ].value) do
 			goodList:AddLine(class, complete)
@@ -402,6 +425,10 @@ local function openMenu( len )
 	local px, py = sidebar:GetWide() + 15, 30
 	local first = true
 
+	local modules = APG.modules
+	modules["home"] = true
+	modules["canphysgun"] = true
+
 	for k, v in next, APG.modules do
 		if k == "canphysgun" then continue end
 		local panel = vgui.Create( "DScrollPanel", APG_Main )
@@ -443,6 +470,7 @@ local function openMenu( len )
 
 	for k, v in next, APG.modules do
 		if k == "canphysgun" then continue end
+
 		local button = sidebar:Add( "DButton" )
 		button:SetPos( 5, (height + 5) * i)
 		button:SetSize( sidebar:GetWide() - 10 , height )
@@ -473,9 +501,14 @@ local function openMenu( len )
 			draw.DrawText( name, "APG_sideBar_font", ( size - name:len() ) / 2, h * 0.35, Color( 189, 189, 189 ), 1)
 		end
 
+		if k == "home" then
+			button:DoClick()
+		end
+
 		i = i + 1
 	end
 
+	APGBuildHomePanel()
 	APGBuildMiscPanel()
 	APGBuildToolsPanel()
 	APGBuildGhostPanel()

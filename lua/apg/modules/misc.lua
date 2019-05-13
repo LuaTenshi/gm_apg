@@ -62,7 +62,7 @@ APG.hookAdd( mod, "OnEntityCreated", "APG_removeInvalidPhysics", function( ent )
 
 	timerSimple(0, function()
 		if not IsValid( ent ) then return end
-		
+
 		local model = ent:GetModel()
 		local owner = APG.getOwner( ent )
 		local phys = ent:GetPhysicsObject()
@@ -158,36 +158,14 @@ APG.hookAdd(mod, "APG.FadingDoorToggle", "init", function(ent, state, ply)
 	end
 end)
 
---[[ Flashlight Spam ]]--
-local spammers = {}
-APG.hookAdd(mod, "PlayerSwitchFlashlight", "APG_flashlightSpam", function(ply, enabled)
-	if not APG.cfg[ "blockFlashlightSpam" ].value then return end
-
-	if ply:CanUseFlashlight() and enabled then
-		spammers[tostring(ply:UserID())] = spammers[tostring(ply:UserID())] or {}
-		local key = spammers[tostring(ply:UserID())]
-
-		key.times = key.times and key.times + 1 or 1
-		key.when = key.when or CurTime()
-
-		if key.times > 4 then
-			local can = ply:CanUseFlashlight()
-			ply:AllowFlashlight(false)
-			ply:EmitSound('buttons/button10.wav')
-
-			timerSimple(4, function()
-				if IsValid(ply) then
-					ply:AllowFlashlight(can)
-					spammers[tostring(ply:UserID())] = nil
-				end
-			end)
-		end
-
-		if key.when+1 < CurTime() then
-			spammers[tostring(ply:UserID())] = nil
-		end
+--[[ Set sv_turbophysics? ]]--
+if APG.cfg[ "touchServerSettings" ].value then
+	if APG.cfg[ "setTurboPhysics" ].value then
+		RunConsoleCommand('sv_turbophysics', '1')
+	else
+		RunConsoleCommand('sv_turbophysics', '0')
 	end
-end)
+end
 
 --[[ FRZR9K ]]--
 
@@ -272,7 +250,7 @@ end)
 
 
 if APG.cfg[ "physGunMaxRange" ].value  then
-	RunConsoleCommand("physgun_maxrange", APG.cfg["physGunMaxRange"].value) -- Can't run SetInt on a convar that wasn't made in lua 
+	RunConsoleCommand("physgun_maxrange", APG.cfg["physGunMaxRange"].value) -- Can't run SetInt on a convar that wasn't made in lua
 end
 
 --[[------------------------------------------

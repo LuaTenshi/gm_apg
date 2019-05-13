@@ -75,7 +75,7 @@ APG.hookAdd(mod, "CanTool", "APG_ToolSpamControl", function(ply)
 			return false
 		end
 	end
-	
+
 	if data.toolDelay == 0 then
 		data.toolDelay = data.curTime + delay
 	end
@@ -111,12 +111,14 @@ APG.hookAdd(mod, "CanTool", "APG_ToolUnfreezeControl", function(ply, tr)
 	end)
 end)
 
-local conVar = GetConVar("toolmode_allow_creator")
-if conVar then
-	if APG.cfg[ "blockCreatorTool" ].value then
-		conVar:SetBool(false)
-	else
-		conVar:SetBool(true)
+if APG.cfg[ "touchServerSettings" ].value then
+	local conVar = GetConVar("toolmode_allow_creator")
+	if conVar then
+		if APG.cfg[ "blockCreatorTool" ].value then
+			conVar:SetBool(false)
+		else
+			conVar:SetBool(true)
+		end
 	end
 end
 

@@ -135,22 +135,32 @@ end
 
 function menu:switch( w, h, text, var )
 	local panel, x, y, ix, iy = menu:grabVars()
-
 	local button = vgui.Create("DButton", panel)
+
+	local isKey = ( type(var) == "string" )
+	local isFunction = ( type(var) == "function" )
 
 	button:SetPos(x, y)
 	button:SetSize(w, h)
 	button:SetText("")
 
 	button.Paint = function(slf, w, h)
-		local enabled = APG.cfg[ var ].value
-			draw.RoundedBox(0, 0, h * 0.95, w - 5, 1, Color(250, 250, 250, 1))
-			draw.DrawText( text, "APG_element2_font", 0, 0, Color( 189, 189, 189), 3 )
-			menu:mainSwitch( w-45, 0, enabled )
+		local enabled = isKey and APG.cfg[ var ].value or isFunction
+		draw.RoundedBox(0, 0, h * 0.95, w - 5, 1, Color(250, 250, 250, 1))
+		draw.DrawText( text, "APG_element2_font", 0, 0, Color( 189, 189, 189), 3 )
+		menu:mainSwitch( w-45, 0, enabled )
 	end
 
-	button.DoClick = function()
-		APG.cfg[ var ].value = not APG.cfg[ var ].value
+	if isKey then
+		button.DoClick = function()
+			APG.cfg[ var ].value = not APG.cfg[ var ].value
+		end
+	else
+		if isFunction then
+			button.DoClick = var
+		else
+			button:SetEnabled( false )
+		end
 	end
 
 	self.vars.x = x + ix
@@ -198,7 +208,7 @@ function menu:numSlider( w, h, text, var, minSlider, maxSlider, decimal )
 		draw.RoundedBox(10, 0, 1, w-15, h, Color( 58, 58, 58, 255))
 		derma.SkinHook( "Paint", "TextEntry", self, w, h )
 	end
-	
+
 	self.vars.x = x + ix
 	self.vars.y = y + iy
 end
@@ -223,7 +233,7 @@ function menu:textEntry( w, h, text, var )
 	txtEntry:SetText( "custom" )
 	txtEntry.OnEnter = function( self )
 	end
-	
+
 	self.vars.x = x + ix
 	self.vars.y = y + iy
 end
@@ -263,7 +273,7 @@ function menu:comboBox( w, h, text, var, content )
 			draw.RoundedBox(0, 0, 0, w, h, Color(58, 58, 58, 240))
 		end
 	end
-	
+
 	self.vars.x = x + ix
 	self.vars.y = y + iy
 end

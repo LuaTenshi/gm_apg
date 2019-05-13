@@ -59,7 +59,7 @@ function ENT:SetColor( color, ... )
 	end
 
 	if not IsColor(color) then
-		ErrorNoHalt( "Invalid color passed to SetColor! \n This error prevents stuff from turning purple/pink." )
+		ErrorNoHalt( "Invalid color passed to SetColor!\nThis error prevents stuff from turning purple/pink." )
 	else
 		APG._SetColor( self, color )
 	end
