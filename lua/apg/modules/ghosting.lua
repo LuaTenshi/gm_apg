@@ -99,13 +99,11 @@ function APG.isTrap( ent, fullscan )
 			end
 		elseif APG.IsVehicle(v) then
 			-- Check if the distance between the spheres centers is less than the sum of their radius.
-			if v:IsPlayer() then -- Only check for players.
-				local vCenter = v:LocalToWorld( v:OBBCenter() )
-				if center:Distance( vCenter ) < v:BoundingRadius() then
-					check = v
-				end
+			local vCenter = v:LocalToWorld( v:OBBCenter() )
+			if center:Distance( vCenter ) < v:BoundingRadius() then
+				check = v
 			end
-		end
+	end
 
 		if check then break end
 	end
