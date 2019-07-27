@@ -30,7 +30,7 @@ function GM:PhysgunPickup( ply, ent )
 	ent.APG_Picked = true
 	ent.APG_Frozen = false
 
-	if ent.APG_HeldBy and not ent.APG_HeldBy.plys[sid] then
+	if ent.APG_HeldBy and ent.APG_HeldBy.plys and not ent.APG_HeldBy.plys[sid] then
 		local HasHolder = (#ent.APG_HeldBy.plys > 0)
 		local HeldByLast = ent.APG_HeldBy.last
 

@@ -74,7 +74,7 @@ APG.hookAdd(mod, "APG.FadingDoorToggle", "APG_fadingDoorStackCheck", function(en
 		end
 
 		if curTime > lastCall then
-			if notify and APG.cfg["fadingDoorStackNotification"].value then
+			if notify and APG.cfg["fadingDoorStackNotify"].value then
 				notify = false
 				APG.notification(ply:Nick() .. " had a stack of " .. count .. " fading doors that were removed.", APG.cfg["notifyLevel"].value, 2)
 				APG.notification("Some of your fading doors were removed.", ply)
