@@ -25,8 +25,9 @@ function GM:PhysgunPickup( ply, ent )
 	hook.Run("APG_PostPhysgunPickup", ply, ent, canPickup)
 
 	if not canPickup then return canPickup end -- Assumed as `false` but returning just incase.
-
-	ent.APG_HeldBy = ent.APG_HeldBy or { plys = {} }
+	
+	ent.APG_HeldBy = ent.APG_HeldBy or {}
+	ent.APG_HeldBy.plys = ent.APG_HeldBy.plys or {}
 	ent.APG_Picked = true
 	ent.APG_Frozen = false
 
