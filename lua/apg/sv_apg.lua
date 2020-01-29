@@ -66,6 +66,7 @@ function APG.isBadEnt( ent )
 	if ent:IsWeapon() then return false end -- Ignore weapons.
 	if ent:IsPlayer() then return false end -- Ignore players.
 	if ent:IsNPC() then return false end
+	if ent.ARCBank_MapEntity then return false end --Ignore ARCBank ents
 
 	local h = hook.Run("APGisBadEnt", ent)
 	if isbool(h) then return h end
