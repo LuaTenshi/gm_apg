@@ -416,3 +416,4 @@ hook.Add("InitPostEntity", "APG_Load", function()
 		hook.Remove("Think", "APG_Load")
 	end)
 end)
+function constraint.NoCollide() end -- Fixes Button crash.
