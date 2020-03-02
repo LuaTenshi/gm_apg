@@ -149,6 +149,7 @@ local function APGBuildGhostPanel()
 	menu:switch( 170, 20, "Always frozen", "alwaysFrozen" )
 	menu:switch( 170, 20, "Fading Doors", "fadingDoorGhosting" )
 	menu:switch( 170, 20, "Ignore Vehicles", "vehAntiGhost" )
+	menu:switch( 170, 20, "Enable Color", "ghostColorToggle")
 	local offsets = menu:panelDone()
 
 	local Mixer = vgui.Create( "CtrlColor", panel )

@@ -65,6 +65,11 @@ defaultSettings.cfg = {
 		desc = "Color set on ghosted props"
 	},
 
+	ghostColorToggle = {
+		value = true,
+		desc = "Toggle ghosting color."
+	},
+
 	badEnts = {
 		value = {
 			["prop_physics"] = true,
