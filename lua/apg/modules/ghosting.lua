@@ -45,6 +45,7 @@ end
 APG._SetColor = APG._SetColor or ENT.SetColor
 
 function ENT:SetColor( color, ... )
+	if not APG.cfg["ghostColorToggle"].value then return end
 	local color = color
 	local r, g, b, a
 
@@ -138,24 +139,25 @@ function APG.entGhost( ent, noCollide, enforce )
 		end
 
 		ent.APG_Ghosted = true
+		if APG.cfg["ghostColorToggle"].value then
+			timer.Simple(0, function()
+				if not IsValid( ent ) then return end
 
-		timer.Simple(0, function()
-			if not IsValid( ent ) then return end
+				if not ent.APG_oldColor then
+					ent.APG_oldColor = ent:GetColor()
 
-			if not ent.APG_oldColor then
-				ent.APG_oldColor = ent:GetColor()
+					if not enforce then
+						if ent.OldColor then ent.APG_oldColor = ent.OldColor end -- For FPP
+						if ent.__DPPColor then ent.APG_oldColor = ent.__DPPColor end -- For DPP
 
-				if not enforce then
-					if ent.OldColor then ent.APG_oldColor = ent.OldColor end -- For FPP
-					if ent.__DPPColor then ent.APG_oldColor = ent.__DPPColor end -- For DPP
-
-					ent.OldColor = nil
-					ent.__DPPColor = nil
+						ent.OldColor = nil
+						ent.__DPPColor = nil
+					end
 				end
-			end
 
-			ent:SetColor( APG.cfg[ "ghostColor" ].value )
-		end)
+				ent:SetColor( APG.cfg[ "ghostColor" ].value )
+			end)
+		end
 
 		ent.APG_oldRenderMode = ent:GetRenderMode()
 		ent:SetRenderMode( RENDERMODE_TRANSALPHA )
@@ -192,7 +194,9 @@ function APG.entUnGhost( ent, ply, failmsg )
 			ent:DrawShadow( true )
 
 			ent:SetRenderMode( ent.APG_oldRenderMode or RENDERMODE_NORMAL )
-			ent:SetColor( ent.APG_oldColor or Color( 255, 255, 255, 255) )
+			if APG.cfg["ghostColorToggle"].value then
+				ent:SetColor( ent.APG_oldColor or Color( 255, 255, 255, 255) )
+			end
 			ent.APG_oldColor = false
 
 			local newCollisionGroup = COLLISION_GROUP_INTERACTIVE
