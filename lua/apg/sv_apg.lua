@@ -18,7 +18,7 @@ function APG.canPhysGun( ent, ply )
 	-- Predict if the player can pickup an entity.
 	if not IsValid(ent) then return false end -- The entity isn't valid, don't pickup.
 
-	if ent:GetPersistent() then 
+	if ent:GetPersistent() then
 		return false
 	end
 
@@ -26,12 +26,12 @@ function APG.canPhysGun( ent, ply )
 		return false
 	end -- Check if the entity is physgun disabled.
 
-	if ply.APG_CantPickup == true then
+	if ply.APG_CantPickup == true or istable(APG_HeldBy.plys) --[[Might be useless check]] and APG_HeldBy.plys[ply:SteamID()] then
 		ply:ConCommand("-attack") -- Tell the player to stop physgunning.
-		return false 
+		return false
 	end -- Is APG blocking the pickup?
 
-	if ent.CPPICanPhysgun then 
+	if ent.CPPICanPhysgun then
 		return ent:CPPICanPhysgun(ply)
 	end -- Let CPPI handle things from here.
 
@@ -49,8 +49,6 @@ function APG.isWhitelistedEnt( ent )
 
 	return false
 end
-
-
 
 	--[[
 		Check if the entity is a bad entity, as defined in badEnts

@@ -242,7 +242,7 @@ defaultSettings.cfg = {
 	},
 
 	blockToolWorld = {
-		value = true,
+		value = false,
 		desc = "Prevent using the toolgun on the world."
 	},
 
